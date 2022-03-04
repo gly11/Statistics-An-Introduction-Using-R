@@ -1,0 +1,19 @@
+---
+title: "Notebook"
+author: "gly"
+date: "3/4/2022"
+output: html_document
+---
+
+# R 工作路径设置
+
+### 查看工作路径：
+```
+getwd()
+```
+### 设置工作路径：
+```
+setwd()
+```
+RGui RStudio皆可使用
+
