@@ -44,5 +44,5 @@ docs/
 # translation temp files
 po/*~
 
-# rmd knit
+# html files
 *.html
