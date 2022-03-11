@@ -9,7 +9,7 @@ output: html_document
 # 
 ***2022-3-4***
 
-# R 工作路径设置
+## R 工作路径设置
 
 
 ### 查看工作路径：
@@ -27,7 +27,7 @@ setwd("~/bin/R/project1")       # RGui & RStudio皆可使用
 #### 2. RStudio中创建项目：
 File -- New Project -- Existing Directory，选择路径即可。
 
-# 安装包及调用包
+## 安装包及调用包
 
 ### 图形界面
 在Packages中搜索选择所需的包（RGui & RStudio皆可）。
@@ -63,7 +63,7 @@ install_bitbucket(...)
 
 [^*]: 参考《R语言入门与实践》附录B。
 
-# 求助
+## 求助
 控制台中使用
 ```{}
 ?func_name
@@ -74,12 +74,12 @@ help(func_name)
 ```
 获得帮助
 
-# R Markdown
+## R Markdown
 * 先安包;
 
 * 拓展名：.Rmd；
 
-* 可支持编织为：.html, .pdf及Word文件。
+* 可支持编译为：.html, .pdf及Word文件。
 
   * ***注***：pdf及word格式输出需要相应的支持，如：***Tex Live, MS Word, Libre/Open Office***等。
 
@@ -90,7 +90,7 @@ help(func_name)
 
 * 插入代码块（多行或单行代码）：
 ````{}
-```{}     # 若在{}中输入R，则该代码块将会被当成R语言代码执行；留空则不执行
+```{}     # 若在{}中为设置，输入R，则该代码块将会被当成R语言代码执行，其后为命名，','后为设置，如‘echo=FALSE’（不打印代码）；留空则不执行
 # code 
 ```
 ````
@@ -133,4 +133,6 @@ help(func_name)
 
 
 # 
-***date***
+***2022-3-11***
+
+## 
