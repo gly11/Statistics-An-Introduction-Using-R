@@ -1,0 +1,313 @@
+---
+title: "R copula 软件包应用简介"
+author: "北京师范大学统计学院 段小刚"
+date: "2022年春季"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+  pdf_document:
+    includes:
+      in_header: myHeader.tex
+    keep_tex: yes
+    latex_engine: xelatex
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+# copula包简介
+
+R中的copula包为使用连接函数进行多变量联合分布建模搭建了便捷的平台. 
+copula包中提供的连接函数包括阿基米德族、正态分布族和t分布族.
+使用该包之前, 需要安装并加载该包到当前R会话(session).
+
+
+# 连接函数及联合分布在R中的表达
+
+copula包定义了两类重要的对象: copula类和mvdc类. 下面依次介绍两类对象. 
+
+## copula类
+
+copula类的某个对象是具有特定数学表达形式的连接函数在R中的等价表达; 类似地, mvdc类的某个对象是基于Sklar定理给出的某个具有特定数学表达形式的联合分布函数在R中的等价表达. 
+
+下面以normCopula函数和claytonCopula函数为例, 分别介绍如何在R中表达这两种典型的连接函数. 
+
+normCopula函数的语法如下: 
+```{r normCopula-fun, eval=T, comment="", echo=F}
+cat( c("normalCopula(param, dim = 2, dispstr = \"ex\")",
+       "    param：数据向量，用于指定正态连接函数参数值", 
+       "    dim：连接函数维数，默认值为2",
+       "    disper：字符串, 用于指明正态连接函数相关矩阵的结构; \"ex\"表示exchangeable, \"ar1\"表示AR(1), \"toep\"表示Toeplitz, \"un\"表示unstructured."), 
+     sep="\n") 
+```
+比如, 由以下Toeplitz结构相关矩阵
+$$
+\begin{aligned}
+{\bf R} &= 
+\begin{pmatrix}
+1 & \rho_1 & \rho_2\\
+\rho_1 & 1 & \rho_1\\
+\rho_2 & \rho_1 & 1
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & 0.5 & 0.6\\
+0.5 & 1 & 0.5\\
+0.6 & 0.5 & 1
+\end{pmatrix}.
+\end{aligned}
+$$
+定义的三维正态连接函数
+$C_{R}(u_1,u_2,u_d) = \Phi_d\left(\Phi^{-1}(u_1),\Phi^{-1}(u_2),\Phi^{-1}(u_3);
+{\bf R}\right)$
+在R中可表示为下面定义的对象norm.cop.toep. 
+
+```{r copula-class:norm-copula}
+# 加载coupla包
+library(copula)
+# 定义不同形式的正态连接函数对象
+norm.cop.ar1 <- normalCopula(c(0.5), dim = 3, dispstr = "ar1")
+norm.cop.ex <- normalCopula(c(0.5), dim = 3, dispstr = "ex")
+norm.cop.toep <- normalCopula(c(0.5,0.6), dim = 3, dispstr = "toep")
+norm.cop.un <- normalCopula(c(0.5, 0.6, 0.7), dim = 3, dispstr = "un")
+# 查询对象类型及内容描述
+class(norm.cop.toep)
+norm.cop.ar1
+norm.cop.ex
+norm.cop.toep
+norm.cop.un
+```
+
+除了normCopula函数, 还可以使用ellipCopula(help用法)函数创建正态连接函数对象. 后者还可以创建t分布对应的连接函数. 
+
+
+claytonCopula函数的语法如下: 
+```{r claytonCopula-fun, eval=T, comment="", echo=F}
+cat( c("claytonCopula(param = NA_real_, dim = 2,
+          use.indepC = c(\"message\", \"TRUE\", \"FALSE\"))",
+       "    param：用于指定生成元参数的数值", 
+       "    dim：连接函数维数，默认值为2",
+       "    use.indepC：用于指明当param值位于边界时,是否返回独立连接函数."), 
+     sep="\n") 
+```
+
+比如, 生成元参数$\alpha=2$时对应的clayton连接函数 clayton连接函数$\big(\max\big(u^{-\alpha}+v^{-\alpha}-1, 0\big)\big)^{-\alpha^{-1}}$在R中可用以下定义的对象clayton.cop等价表达:
+```{r copula-class:clayton-copula}
+# 加载coupla包
+library(copula)
+# 定义生成元参数取值为连接函数对象
+clayton.cop <- claytonCopula(2, dim = 2)
+class(clayton.cop)
+clayton.cop
+```
+
+除了claytonCopula函数, 还可以使用更一般的archmCopula(help用法)函数创建Clayton连接函数对象. 
+
+## mvdc类
+
+由特定连接函数及特定边缘分布生成的联合分布, 在R中可用mvdc类的某个具体对象等价表达. 生成mvdc类对象的函数为mvdc. 正如基于连接函数的联合分布由三部分构成: 连接函数, 边缘分布类型, 边缘分布参数; 与此对应, mvdc函数形参主要包括三个部分, 具体如下:  
+```{r mvdc-fun, eval=T, comment="", echo=F}
+cat( c("mvdc(copula, margins, paramMargins)",
+       "    copula：特定的R连接函数",
+       "    margins：用于指明边缘分布类型的字符串向量",
+       "    paramMargins：用于指明边缘分布参数取值的列表, 列表每个元素是带名向量或列表"), 
+     sep="\n") 
+```
+
+比如, 以下代码定义了边缘分布分别为$N(0,1), Exp(1/2)$, 参数为$0.75$的正态连接函数对应的二元分布. 注意根据不同的数据结构采用相应的元素访问格式. 因为mvdc是S4类, 采用``@"符号访问其元素. 
+```{r mvdc-class:normCopula+NE}
+# 加载coupla包
+library(copula)
+# 基于特定连接函数和特定边缘分布定义联合分布
+mv.NE <- mvdc(normalCopula(0.75), c("norm", "exp"),
+              list(list(mean = 0, sd =2), list(rate = 2)))
+# 直接输入对象或调用print()/show()方法查看对象内容描述
+mv.NE  
+print(mv.NE)
+show(mv.NE)
+# 查看对象类型, 访问对象元素; 注意根据不同的数据结构采用相应的元素访问格式.
+class(mv.NE)
+# S4类元素访问采用@符号
+mv.NE@copula
+mv.NE@margins
+mv.NE@paramMargins
+# 对列表数据结构: []是子集式访问, [[]](或$, 仅当元素带名时)是元素式访问.
+mv.NE@paramMargins[[1]]$mean
+```
+
+# 使用与copula类和mvdc类的方法
+
+## 计算分布、密度取值, 生成随机数
+
+对给定的copula对象, 可以使用pcopula()方法(函数)计算连接函数对应的分布函数取值, 
+使用dcopula()方法(函数)计算连接函数对应的密度取值. 
+
+对给定的mvdc对象, 可以使用pmvdc()方法(函数)计算其分布函数取值, 
+使用dmvdc()方法(函数)计算其密度取值. 
+
+对给定的copula和mvdc对象, 可以分别使用rcopula()和rmvdc()方法从对应连接函数或对应分布函数生成随机数. 对应R函数语法如下:
+```{r pdrMethods, eval=T, comment="", echo=F}
+cat( c("dCopula(u, copula, log=FALSE)", 
+       "pCopula(u, copula)", 
+       "rCopula(n, copula)",
+       "    u：自变量值",
+       "    n：拟生成随机数个数",
+       "    copula：特定copula对应的分布函数"), 
+     sep="\n") 
+cat( c("dMvdc(x, mvdc, log=FALSE)",
+       "pMvdc(x, mvdc)",
+       "rMvdc(n, mvdc)",
+       "    x：自变量值",
+       "    n：拟生成随机数个数",
+       "    mvdc：特定mvdc对应的分布函数"), 
+     sep="\n") 
+```
+
+
+## 绘图方法
+
+对copula对象, scatterplot3d包中的scatterplot3d()方法可以用于绘制三维散点图. 对copula和mvdc两类对象, 均可通过contour()和persp()方法绘制等高线图及透视图. 
+
+```{r graphicsMethods}
+# 加载coupla包
+library(copula)
+# 构造正态连接函数对象
+norm.cop.toep <- normalCopula(c(0.5,0.6), dim = 3, dispstr = "toep")
+# 构造clayton连接函数对象
+clayton.cop <- claytonCopula(2, dim = 2)
+# 基于连接函数构造特定联合分布对象
+mv.NE <- mvdc(normalCopula(0.75), c("norm", "exp"),
+              list(list(mean = 0, sd =2), list(rate = 2)))
+
+# 生成随机数
+## 设置种子, 以确保结果的可重复性
+set.seed(1)
+## 样本量
+n <- 100
+## 正态和clayton连接函数随机数
+r.norm.cop.toep <- rCopula(n, norm.cop.toep)
+r.clayton.cop <- rCopula(n, clayton.cop)
+r.mv.NE <- rMvdc(n, mv.NE)
+
+# 绘图
+## 对copula随机数绘制散点图
+#par(mfrow=c(1,3))
+### packName::funName等价于先加载packName包, 再调用函数funName。
+scatterplot3d::scatterplot3d(r.norm.cop.toep)
+plot(r.clayton.cop)
+plot(r.mv.NE)
+
+### 绘制等高线图
+clayton.mvdc <- mvdc(
+  copula = clayton.cop,
+  margins = c("norm", "norm"), 
+  paramMargins = list(c(mean = 0, sd = 1), c(mean = 0, sd = 1)))
+contour(clayton.mvdc, dMvdc, xlim = c(-3, 3), ylim = c(-3, 3))
+```
+
+
+# 基于连接函数的模型拟合
+
+
+## 连接模型拟合
+
+给定独立同分布观测数据$(x_{i1},\ldots,x_{id})^T, i=1,\ldots,n$, 针对边缘分布的不同处理, 可以采用最大似然、最大拟似然(maximum pseudo-likelihood)、逆Kendall's tau(itau)、逆Spearman's rho(irho)等多种方法估计连接函数参数. 下面通过随机生成系列观测, 演示copula包中基于fitCopula()函数的连接函数拟合方法; 函数语法如下: 
+
+```{r fitCopula-fun, eval=T, comment="", echo=F}
+cat( c("fitCopula(copula, 
+          data,
+          method = c(\"mpl\", \"ml\", \"itau\", \"irho\", \"itau.mpl\"), 
+          start = NULL)",
+       "      copula：copula对象",
+       "      data：nxd维观测数据矩阵",
+       "      method：估计方法",
+       "      start：参数初始值"), 
+     sep="\n") 
+```
+
+
+```{r fitCopula}
+# 加载coupla包
+library(copula)
+# 生成随机数
+## 基于Gumbel连接函数生成观测值
+set.seed(2) # for reproducibility
+gumbel.cop <- gumbelCopula(3, dim=2)
+x <- rCopula(n, gumbel.cop) # "true" observations (simulated)
+u <- pobs(x)                # pseudo-observations
+# 使用不同方法估计连接函数模型参数
+## 最大似然方法 -- use 'x', not 'u' ! --
+fit.ml <- fitCopula(gumbelCopula(), x, method="ml")
+fit.ml
+### 计算参数置信区间
+confint(fit.ml) 
+confint(fit.ml, level = 0.98)
+### 给出更多汇总结果
+summary(fit.ml) 
+coef(fit.ml)# named vector
+coef(fit.ml, SE = TRUE)# matrix
+### 基于两种不同的方法计算对数似然函数: 一是基于泛型函数logLik(),
+### 二是基于copula包中的loglikCopula()函数.
+(ll. <- logLik(fit.ml))
+as.numeric(ll.)
+loglikCopula(coef(fit.ml), u=x, copula=gumbel.cop)
+
+## Inverting Kendall's tau
+fit.tau <- fitCopula(gumbelCopula(), u, method="itau")
+fit.tau
+confint(fit.tau) 
+confint(fit.tau, level = 0.98)
+summary(fit.tau) 
+coef(fit.tau)
+coef(fit.tau, SE = TRUE)
+
+## Inverting Spearman's rho
+fit.rho <- fitCopula(gumbelCopula(), u, method="irho")
+summary(fit.rho)
+
+## Maximum pseudo-likelihood
+fit.mpl <- fitCopula(gumbelCopula(), u, method="mpl")
+summary(fit.mpl)
+```
+
+## 基于连接函数的联合分布拟合
+
+R基于copula包中的fitMvdc()函数估计基于连接函数的联合分布模型参数; 函数语法如下: 
+
+```{r fitMvdc-fun, eval=T, comment="", echo=F}
+cat( c("fitMvdc(data, mvdc, start, 
+        method = \"BFGS\",
+        estimate.variance = fit$convergence == 0)",
+        "      data：nxd维观测数据矩阵",
+        "      mvdc：mvdc对象",
+        "      start：参数初始值",        
+        "      method：估计方法",
+        "      estimate.variance：逻辑值,取真时,估计协方差矩阵"),
+        sep="\n") 
+```
+
+下面基于随机生成观测数据演示fitMvdc()函数用法. 
+```{r fitMvdc}
+# 加载coupla包
+library(copula)
+# 基于Gumbel连接函数生成观测值
+G3 <- gumbelCopula(3, dim=2)
+gMvd2  <- mvdc(G3, c("exp","exp"),
+               param = list(list(rate=2), list(rate=4)))
+n <- 200 
+set.seed(1)
+x <- rMvdc(n, gMvd2)
+# 基于fitMvdc()函数拟合数据
+fit2 <- fitMvdc(x, gMvd2, start = c(1,1,2))
+fit2
+confint(fit2)
+summary(fit2) 
+vcov(fit2)
+```
