@@ -77,6 +77,12 @@ help(func_name)
 ## R Markdown
 * 先安包;
 
+```
+### 记录一次安装rmarkdown
+当我尝试在Ubuntu中安装rmarkdown时，总是失败，阅读错误信息发现是`stingi`安装失败，原因为在安装时尝试从github上下载ICU data library，然而由于众所周知的原因超时失败，于是导致无法安装。
+查阅R Documentation，发现一条：`SystemRequirements:	C++11, ICU4C (>= 55, optional)`，说明`ICU`依赖属于系统层面的依赖，查询发现应安装`libicu-dev`包，因此使用`apt install libicu-dev`安装，而后安装`stringi`成功
+```
+
 * 拓展名：.Rmd；
 
 * 可支持编译为：.html, .pdf及Word文件。
@@ -272,3 +278,104 @@ R中列表通过list()函数定义，基本语法为：list(…)
 
 * 若在定义列表时，给列表中的元素取了名字，则可使用该名字对列表进行访问。
 
+***
+# 
+*** 2022-3-18***
+## R运算符和控制结构
+
+### R运算符
+
+R运算符主要包括：*算术运算符、关系运算符、逻辑运算符*
+
+* R逻辑运算符：
+  * `!`: 逻辑非(logical NOT)
+  * `&`: 逐个元素逻辑与(element-wise logical AND) | :逐个元素逻辑或(element-wise logical OR)
+  * `&&`: 首元素逻辑与(first element logical AND) ||: 首元素逻辑或(first element logical OR)
+  * 逻辑运算的自变量只能为数值型或逻辑型变量。
+* **注**：
+  * 除了逻辑非（`!`）运算符，其他所有运算符都可认为是*二元函数*（本质上是二元函数）。
+  * 运算符函数的自变量可取值*向量、矩阵*等。
+  * 除了首元素逻辑与（`&&`）和首元素逻辑或（`||`），当参与运算的两个变量均为向量或矩阵是，R按***对应位置***（`element-wise`）执行相应的运算，结果仍为*相同维度*的向量或矩阵。
+  * 在R中，数值0为`FALSE`，非0数值为`TRUE`
+
+* R算术运算符
+  * `+`：加(addition)
+  * `-`：减(subtraction)
+  * `*`：乘(multiplication)
+  * `/`：除(division)
+  * `^`：乘方(exponentiation)
+  * `%%`：求余(modulus=remainder from division)
+  * `%/%`：整除(integer division)
+  * 算数运算的自变量主要为数值型
+
+* R关系运算符
+  * `<`: 小于(less than)
+  * `>`: 大于(greater than)
+  * `<=`: 小于等于(less than or equal to)   
+  * `>=`: 大于等于(greater than or equal to) 
+  * `==`: 等于(equal to)
+  * `!=`: 不等于(not equal to)
+  * 关系运算的自变量只能为*数值型或逻辑型*。
+
+* R的运算符优先级及结合律
+  * 算术运算>关系运算>逻辑运算
+  * 乘方>乘除>加减
+  * 相同优先级运算符，由左至右依次两两结合计算。
+  * 可通过一对圆括弧()改变运算符计算次序。
+  * 相同运算符在一个表达式中可能连续出现多次， 此时由运算符的*结合律*决定表达式取值。
+  * 除了*“乘方”*运算符和*向左赋值*运算符，结合律规则为*“由右向左”*，其它主要运算符结合顺序为*“由左向右”*。
+
+### R条件语句
+
+* 单条件语句：
+
+```{}
+if( condition ){
+  # code
+}
+```
+* 复合条件语句:
+
+```{}
+if( condition ){
+  # code
+} else {
+  # code
+}
+
+```
+
+* 多条件语句
+
+```{}
+if( condition_1 ){
+  # code
+} else if( condition_2) {
+  # code
+}
+···
+else if ( condition_n ) {
+  # code
+} else {
+  # code
+}
+```
+
+### R循环语句
+
+* `for`循环：
+  * 通过向量控制循环，并称该向量为**循环向量**
+  * （类似Python中的`for i in range(x): ···`）
+```{}
+for (i in v) {
+  # code
+}
+```
+
+* `while`循环
+  * 通过条件表达式控制循环是否执行
+```{}
+while ( condition ) {
+  # code
+}
+```
