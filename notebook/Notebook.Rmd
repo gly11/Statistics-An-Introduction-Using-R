@@ -77,7 +77,7 @@ help(func_name)
 ## R Markdown
 * 先安包;
 
-```
+```{}
 ### 记录一次安装rmarkdown
 当我尝试在Ubuntu中安装rmarkdown时，总是失败，阅读错误信息发现是`stingi`安装失败，原因为在安装时尝试从github上下载ICU data library，然而由于众所周知的原因超时失败，于是导致无法安装。
 查阅R Documentation，发现一条：`SystemRequirements:	C++11, ICU4C (>= 55, optional)`，说明`ICU`依赖属于系统层面的依赖，查询发现应安装`libicu-dev`包，因此使用`apt install libicu-dev`安装，而后安装`stringi`成功
