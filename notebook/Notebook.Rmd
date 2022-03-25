@@ -2,7 +2,10 @@
 title: "R 笔记"
 # author: "gly"
 # date: "3/4/2022"
-output: html_document
+output: 
+  html_document:
+    toc: true
+
 ---
 
 ***
@@ -13,13 +16,13 @@ output: html_document
 
 
 ### 查看工作路径：
-```{}
+```{r, tidy=TRUE, eval=FALSE}
 getwd()
 ```
 ### 设置工作路径：
 #### 1. 使用代码
 example:
-```{}
+```{r, tidy=TRUE, eval=FALSE}
 setwd("~/bin/R/project1")       # RGui & RStudio皆可使用
 ```
 
@@ -34,7 +37,7 @@ File -- New Project -- Existing Directory，选择路径即可。
 
 ### 命令行
 通过
-```{}
+```{r, tidy=TRUE, eval=FALSE}
 install.packages("pkg_name")    # pkg_name为包的名字，双引号为必需
 install.packages(c("package1", "package2"))   # 安装多个包
 ```
@@ -42,20 +45,20 @@ install.packages(c("package1", "package2"))   # 安装多个包
 
 ### 使用包
 使用
-```{}
+```{r, tidy=TRUE, eval=FALSE}
 library("pkg_name")       # 双引号非必需
 ```
 将包加载到当前R会话中，在当前R会话关闭前都可使用。
 
 使用
-```{}
+```{r, tidy=TRUE, eval=FALSE}
 library()
 ```
 查看当前R库中存储的包。
 
 #### 注[^*]：
 另外可通过
-```{}
+```{r, tidy=TRUE, eval=FALSE}
 install_github(...)
 install_bitbucket(...)
 ```
@@ -65,11 +68,11 @@ install_bitbucket(...)
 
 ## 求助
 控制台中使用
-```{}
+```{r, tidy=TRUE, eval=FALSE}
 ?func_name
 ```
 或者
-```{}
+```{r, tidy=TRUE, eval=FALSE}
 help(func_name)
 ```
 获得帮助
@@ -96,7 +99,7 @@ help(func_name)
 
 * 插入代码块（多行或单行代码）：
 ````{}
-```{}     # 若在{}中为设置，输入R，则该代码块将会被当成R语言代码执行，其后为命名，','后为设置，如‘echo=FALSE’（不打印代码）；留空则不执行
+```{r, tidy=TRUE, eval=FALSE}     # {}中为设置，输入R，则该代码块将会被当成R语言代码执行，其后为命名，','后为设置，如‘echo=FALSE’（不打印代码），'tidy=TRUE'（自动优化排版）, 'eval=FALSE'（不执行）；留空则不执行;
 # code 
 ```
 ````
@@ -110,7 +113,7 @@ help(func_name)
 ### 插入注释
 
   * 可用markdown语法：
-```{}
+```{md}
 [ ]: comment 
 ```
   &emsp; 进行注释，其中[ ]内可加任何东西，可组成表情包注释。
@@ -118,7 +121,7 @@ help(func_name)
 [-_-]: 这是一条注释
 
   * 也可使用html注释：
-```{}
+```{html}
 <!--也是注释-->
 
 <!--
@@ -139,6 +142,7 @@ help(func_name)
 
 
 # 
+
 ***2022-3-11***
 
 ## R语言基础 I
@@ -146,9 +150,9 @@ help(func_name)
 ### 数据类型
 R的基本数据类型包括：
 
-* 数值型(numeric)：包括整型数值、浮点型数值
-* 逻辑型(logical)：包括Ture、False 
-* 字符型(character)：包括单引号或双引号括起来的字符序列
+* **数值型**(numeric)：包括整型数值、浮点型数值
+* **逻辑型**(logical)：包括Ture、False 
+* **字符型**(character)：包括单引号或双引号括起来的字符序列
 
 R数据类型转换：
 
@@ -163,25 +167,25 @@ R数据类型转换：
 ### 常量变量
 R中的常量指：其值不能改变的量，包括：
 
-* 数值常量(numeric constant)：包括所有整型(integer)、浮点型(float)、复数型数据(complex)；
-* 字符常量(character constant)：包括所有的字符型数据；
-* 逻辑常量(logical constant)：包括TRUE和FALSE两个逻辑型数据
+* **数值常量**(numeric constant)：包括所有**整型**(integer)、**浮点型**(float)、**复数型数据**(complex)；
+* **字符常量**(character constant)：包括所有的**字符型**数据；
+* **逻辑常量**(logical constant)：包括`TRUE`和`FALSE`两个逻辑型数据
 
-R变量用于存储R对象。变量有变量名，亦称变量标识符(identifier)
+R变量用于存储R对象。变量有变量名，亦称**变量标识符**(identifier)
 
-* 变量名必须由字母、数字、下划线和句点（.）组成，且第一个字符不能是数字；若第一个字符是句点，第二个字符必须是字母；
+* 变量名必须由*字母、数字、下划线和句点（.）*组成，且第一个字符不能是数字；若第一个字符是句点，第二个字符必须是字母；
 * 中文环境下，汉字可作为合法变量名；
 * 变量名区分大小写
 
 ### 保留字
 R中，具有特定含义，不能用作变量标识符的单词， 称为保留字，主要包括：
 
-* 函数定义及程序控制保留字： function, if, else, for, while, repeat, break, continue, next；
-* 逻辑常量保留字： TRUE, FALSE；
-* Inf：正无穷，比如1/0；
-* NaN（Not a Number）：数学上不存在的数，比如0/0，两个正无穷相减；
-* NA（Not Available）：尚未得到的数据，也称为缺失数据；
-* NULL：空值对象。
+* 函数定义及程序控制保留字： `function`, `if`, `else`, `for`, `while`, `repeat`, `break`, `continue`, `next`；
+* 逻辑常量保留字： `TRUE`, `FALSE`；
+* `Inf`：正无穷，比如1/0；
+* `NaN`（Not a Number）：数学上不存在的数，比如0/0，两个正无穷相减；
+* `NA`（Not Available）：尚未得到的数据，也称为缺失数据；
+* `NULL`：空值对象。
 
 ## R语言基础II：数据结构
 学习数据结构要关注两个方面：
@@ -201,60 +205,78 @@ R中，具有特定含义，不能用作变量标识符的单词， 称为保留
 ### 向量(factor)
 R中向量定义有两类方法。
 
-* 一是通过基础通用的c()函数(c: concatenate，拼接)定义向量。
-  * 基本语法为： c(…)，其中…表示可变长度输入参数，拟拼接到一起的数据对象，用英文输入逗号分隔。
+* 一是通过基础通用的`c()`函数(c: concatenate，拼接)定义向量。
+  * 基本语法为： 
+```{r, tidy=TRUE, eval=FALSE}
+  c(…)
+```
+  其中`...`表示可变长度输入参数，拟拼接到一起的数据对象，用英文输入逗号分隔。
   * 向量访问格式为：向量名[拟访问元素索引向量]。
 
 * 二是有规律向量的快捷定义。 针对有规律向量，比如等差数列、格式有规律的字符串序列， R提供了更简洁的定义方式。主要涉及到R自带的
-seq(), rep(), paste(), numeric(), character()函数
+`seq()`, `rep()`, `paste()`, `numeric()`, `character()`函数
 
 ### 矩阵(matrix)
-R中矩阵由函数matrix()定义， matrix()函数语法为：
+R中矩阵由函数matrix()定义：
+
+```{r, tidy=TRUE, eval=FALSE}
 matrix(data = NA, nrow = 1, ncol = 1, byrow = FALSE, dimnames = NULL)
+```
 
-* data：数据向量，默认值为缺失值NA,
+* `data`：数据向量，默认值为缺失值NA,
 
-* nrow：行数，默认值为1；
+* `nrow`：行数，默认值为1；
 
-* ncol：列数，默认值为1；
+* `ncol`：列数，默认值为1；
 
-* byrow：逻辑型，表示数据向量是否按行排列成矩阵，默认FALSE,即：默认按列填充；
+* `byrow`：逻辑型，表示数据向量是否按行排列成矩阵，默认FALSE,即：默认按列填充；
 
-* dimnames：矩阵行列名，默认为空值，或者为长度为2的列表，列表元素分别为字符型向量，表示行列名。
+* `dimnames`：矩阵行列名，默认为空值，或者为长度为2的列表，列表元素分别为字符型向量，表示行列名。
 
-矩阵元素/子矩阵访问格式为： mat_name[row_index（行索引）, col_index（列索引）]。
+矩阵元素/子矩阵访问格式为： `mat_name[row_index（行索引）, col_index（列索引）]`。
 
 **注：**
 
-* letters与LETTERS为R内置向量，分别表示26位小写和大写拉丁字母。
-* list()函数为列表定义函数，后文将介绍。
+* `letters`与`LETTERS`为R内置向量，分别表示26位小写和大写拉丁字母。
+* `list()`函数为列表定义函数，后文将介绍。
 
 ### 数据框(data frame)
-R中数据框由函数data.frame()定义， data.frame()函数语法为：
+
+R中数据框由函数`data.frame()`定义：
+
+```{r, tidy=TRUE, eval=FALSE}
 data.frame(..., row_names = NULL, stringsAsFactors = TRUE)
+```
 
-* ...：可变长度输入参数，格式为value，或者tag=value；
+其中：
 
-* row_names：行名，默认为空；
+* `...`：可变长度输入参数，格式为value，或者tag=value；
 
-* stringsAsFactors：字符型向量是否当作*因子*处理，默认为TRUE；
+* `row_names`：行名，默认为空；
 
-数据框的索引和矩阵类似： data.frame_name[row_index,col_index]； row_index、col_index可以替换为数据框行列。
+* `stringsAsFactors`：字符型向量是否当作*因子*处理，默认为`TRUE`；
+
+数据框的索引和矩阵类似： `data.frame_name[row_index,col_index]`
+
+其中：`row_index`、`col_index`可以替换为数据框行列。
 也可通过如下形式访问数据框元素：
 
-* data.frame_name$col_name，返回*列对应向量*；
+* `data.frame_name$col_name`，返回*列对应向量*；
 
-* data.frame_name[[col_name]]，返回*列对应向量*；
+* `data.frame_name[[col_name]]`，返回*列对应向量*；
 
-* data.frame_name[col_name] ， 返回*特定列对应子数据框*。
+* `data.frame_name[col_name]`，返回*特定列对应子数据框*。
 
-注意体会不同索引方式的区别。 
-比如:
+不同索引方式的区别：
+
 ```
 d[[“age”]]        # 返回age向量
 d[“age”]          # 返回只包含一个age字段的子数据框；
 ```
-两种索引中，变量名age要用一对双引号括住；而使用$col_name访问时可以不要双引号;
+
+两种索引中，变量名`age`要用一对双引号括住；
+
+而使用`$col_name`访问时可以不要双引号;
 
 采用双下标索引形式时，如果包含全部行或全部列，对应索引可以省略。
 
@@ -267,20 +289,48 @@ d[“age”]          # 返回只包含一个age字段的子数据框；
 
 ### 列表(list)
 
-R中列表通过list()函数定义，基本语法为：list(…)
+R中列表通过list()函数定义，基本语法为：
+
+```{r, tidy=TRUE, eval=FALSE}
+list(…)
+```
 
 列表元素访问有两种格式：
 
-* 一是list.name[index]，此时返回子列表；
-* 二是list.name[[single.index]]，此时返回单个索引指标对应的数值或数据结构。
+* 一是`list.name[index]`，此时返回子列表；
+* 二是`list.name[[single_index]]`，此时返回单个索引指标对应的数值或数据结构。
 
 **注：**
 
 * 若在定义列表时，给列表中的元素取了名字，则可使用该名字对列表进行访问。
 
+### 因子(factor)
+
+* **因子**是*向量型对象(vector object)*
+* R中用因子代表数据中分类变量,如性别、省份、职业
+* R提供了*无序因子(unordered factors)*和*有序因子(ordered factors)*
+* 有序因子代表有序量度，如打分结果，疾病严重程度等。
+* 因子的创建通过`factor()`函数实现，其语法如下:
+```{r, tidy=TRUE, eval=FALSE}
+factor(x = character(), levels, labels = levels,
+        exclude = NA, ordered = is.ordered(x), nmax = NA)
+```
+
+其中：
+
+* `x`:数据向量，通常仅取少数几个不同值
+* `levels`:可选字符型向量,默认为x不同取值从小到大排序并转换成字符型
+* `labels`:用于表达各水平值的*标签*
+* `exclude`:构造因子水平时拟剔除水平值
+* `ordered`:*逻辑标志(logical flag)*，声明水平是否有序
+* `nmax`:最大因子水平数
+
 ***
+
 # 
+
 *** 2022-3-18***
+
 ## R运算符和控制结构
 
 ### R运算符
@@ -289,8 +339,10 @@ R运算符主要包括：*算术运算符、关系运算符、逻辑运算符*
 
 * R逻辑运算符：
   * `!`: 逻辑非(logical NOT)
-  * `&`: 逐个元素逻辑与(element-wise logical AND) | :逐个元素逻辑或(element-wise logical OR)
-  * `&&`: 首元素逻辑与(first element logical AND) ||: 首元素逻辑或(first element logical OR)
+  * `&`: 逐个元素逻辑与(element-wise logical AND)
+  * `|`:逐个元素逻辑或(element-wise logical OR)
+  * `&&`: 首元素逻辑与(first element logical AND) 
+  * `||`: 首元素逻辑或(first element logical OR)
   * 逻辑运算的自变量只能为数值型或逻辑型变量。
 * **注**：
   * 除了逻辑非（`!`）运算符，其他所有运算符都可认为是*二元函数*（本质上是二元函数）。
@@ -329,14 +381,14 @@ R运算符主要包括：*算术运算符、关系运算符、逻辑运算符*
 
 * 单条件语句：
 
-```{}
+```{r, tidy=TRUE, eval=FALSE}
 if( condition ){
   # code
 }
 ```
 * 复合条件语句:
 
-```{}
+```{r, tidy=TRUE, eval=FALSE}
 if( condition ){
   # code
 } else {
@@ -347,7 +399,7 @@ if( condition ){
 
 * 多条件语句
 
-```{}
+```{r, tidy=TRUE, eval=FALSE}
 if( condition_1 ){
   # code
 } else if( condition_2) {
@@ -366,7 +418,7 @@ else if ( condition_n ) {
 * `for`循环：
   * 通过向量控制循环，并称该向量为**循环向量**
   * （类似Python中的`for i in range(x): ···`）
-```{}
+```{r, tidy=TRUE, eval=FALSE}
 for (i in v) {
   # code
 }
@@ -374,8 +426,93 @@ for (i in v) {
 
 * `while`循环
   * 通过条件表达式控制循环是否执行
-```{}
+```{r, tidy=TRUE, eval=FALSE}
 while ( condition ) {
   # code
 }
 ```
+
+***
+
+#
+
+***2022-3-25***
+
+## 函数
+
+* **函数**是执行特定任务的代码封装。
+* R中有两类函数
+  * 一是各种包自带函数
+  * 二是用户自定义函数
+* 函数的特点：
+  * 可以接收*参数(arguments,parameters)*，也可以不接收;
+  * 可以返回*值*(通常为一个数据结构，比如列表)，也可以 不返回;
+  * 可以有*函数名*，也可以没有函数名，后者称为**匿名函数**。
+* 使用用户自定义函数，
+  * 可以通过控制台`source()`函数(比如`source(“~/bin/r/rbin/myFun.r”)`，把保存特定函数的R脚本文件绑定到当前R会话(R session)
+  * 或者直接把函数定义拷贝到R控制台。
+  
+### 函数定义
+
+函数定义的结构为：
+
+```{r, tidy=TRUE, eval=FALSE}
+fun_name <- function( args_list ) {
+  # code
+  # return(expression)    # 可以没有 
+}
+```
+
+其中：
+
+  * `fun_name`：函数名
+  * `args_list`：参数列表，可以用等号设置默认值，则无参数调用时使用默认值
+  * `# code`：函数代码
+  * `# return(expression)`：函数返回值（可以不返回，则没有）
+  
+另外有**可变参数函数**
+  * 在形参列表中使用`...`
+  * 例如：
+```{r, tidy=TRUE}
+# 函数定义举例
+powers <- function(x, ...) {
+  for(i in list(...)) { 
+    print(x^i)
+  } 
+}
+
+# 注意调用返回结果的不同 
+powers(2, 1,2,3,4,5,6)
+powers(2, 1:6)
+powers(2, matrix(1:6,2), 1:6, 1,2,3,4,5,6)
+```
+
+另外，匿名函数可定义如下：
+```{r, tidy=TRUE}
+# 定义一个匿名函数并执行
+(function(x, y=c(1,2,3)){ return(x^y)})(3)
+```
+
+### 函数的调用
+
+* 函数调用的方式有：
+  * 按（形参）位置调用
+  * 按关键字（形参名）调用
+  * 混合调用
+* 函数调用时，实参和形参的类型有时不同，如：
+
+```{r, tidy=TRUE}
+fun <- function(x, y=c(1, 2, 3)) {
+  return(x^y)
+}
+
+fun(3)
+fun(y=3, x=2)
+fun(y=3, 2)
+
+fun(3, 1:6)
+fun(2, matrix(1:6, nrow=2))
+```
+
+
+  
