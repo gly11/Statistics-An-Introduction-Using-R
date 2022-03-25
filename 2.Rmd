@@ -1,0 +1,56 @@
+---
+title: "统计学导论A第二次作业"
+author: "gly"
+date: '2022-03-25'
+output: html_document
+---
+
+## 练习2.25
+
+```{R}
+1 - pbinom(q = 3, size = 10, prob = 0.1)
+```
+
+## 练习2.26
+
+```{r}
+pbinom(q = 14, size = 20, prob = 0.8)
+```
+
+## 练习2.27
+
+```{r}
+dbinom(x = 51, size = 100, prob = 0.51)
+```
+
+## 练习2.32
+```{r}
+# (1)
+lamd = 399/35
+dpois(x = 0, lambda = lamd)
+
+# (2)
+ppois(q = 19, lambda = lamd)
+
+# (3)
+1-ppois(q = 20, lambda = lamd)
+```
+
+## 练习2.32
+
+```{r}
+# 1
+pnorm(1.2) - pnorm(0)
+
+# 2
+pnorm(0) - pnorm(-1.2)
+
+# 3
+pnorm(1.2) - pnorm(-1.2)
+
+# 4
+# dnorm(1.2)    连续型随机变量的分布在单点处取0，与"密度值"不同
+
+# 5
+1-pnorm(1.2)
+```
