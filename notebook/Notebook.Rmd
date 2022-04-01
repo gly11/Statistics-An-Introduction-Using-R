@@ -56,7 +56,7 @@ library()
 ```
 查看当前R库中存储的包。
 
-#### 注[^*]：
+#### 注[^1]：
 另外可通过
 ```{r, tidy=TRUE, eval=FALSE}
 install_github(...)
@@ -64,7 +64,7 @@ install_bitbucket(...)
 ```
 安装未托管至CRAN的包
 
-[^*]: 参考《R语言入门与实践》附录B。
+[^1]: 参考《R语言入门与实践》附录B。
 
 ## 求助
 控制台中使用
@@ -514,7 +514,186 @@ fun(3, 1:6)
 fun(2, matrix(1:6, nrow=2))
 ```
 
+### 关于 '`...`'[^2]
+
+[^2]: 见：https://cran.r-project.org/doc/manuals/r-release/R-intro.html
+
+> #### 10.4 The ‘`...`’ argument<br>
+Another frequent requirement is to allow one function to pass on argument settings to another. For example many graphics functions use the function `par()` and functions like plot() allow the user to pass on graphical parameters to `par()` to control the graphical output. (See Permanent changes: The `par()` function, for more details on the `par()` function.) This can be done by including an extra argument, literally ‘`...`’, of the function, which may then be passed on. An outline example is given below.<br>
+```{r, eval=FALSE}
+fun1 <- function(data, data.frame, graph=TRUE, limit=20, ...) {
+  [omitted statements]
+  if (graph)
+    par(pch="*", ...)
+  [more omissions]
+}
+```
+
+> Less frequently, a function will need to refer to components of ‘`...`’. The expression `list(...)` evaluates all such arguments and returns them in a named list, while ..1, ..2, etc. evaluate them one at a time, with ‘..n’ returning the n’th unmatched argument.
+
+> #### 12.4.1 Permanent changes: The `par()` function<br>
+The `par()` function is used to access and modify the list of graphics parameters for the current graphics device.
+
+```{r, eval=FALSE}
+`par()`
+> Without arguments, returns a list of all graphics parameters and their values for the current device.
+
+par(c("col", "lty"))
+> With a character vector argument, returns only the named graphics parameters (again, as a list.)
+
+par(col=4, lty=2)
+> With named arguments (or a single list argument), sets the values of the named graphics parameters, and returns the original values of the parameters as a list.
+```
+
+> Setting graphics parameters with the `par()` function changes the value of the parameters permanently, in the sense that all future calls to graphics functions (on the current device) will be affected by the new value. You can think of setting graphics parameters in this way as setting “default” values for the parameters, which will be used by all graphics functions unless an alternative value is given.<br>
+Note that calls to `par()` always affect the global values of graphics parameters, even when `par()` is called from within a function. This is often undesirable behavior—usually we want to set some graphics parameters, do some plotting, and then restore the original values so as not to affect the user’s R session. You can restore the initial values by saving the result of `par()` when making changes, and restoring the initial values when plotting is complete.
+
+```{r, eval=FALSE}
+  > oldpar <- par(col=4, lty=2)
+    … plotting commands …
+  > par(oldpar)
+  
+To save and restore all settable25 graphical parameters use
+
+> oldpar <- par(no.readonly=TRUE)
+  … plotting commands …
+> par(oldpar)
+```
 
 ***
 
 #
+
+***2022-4-1***
+
+## R基本概率分布（随机变量相关函数及R实现）
+
+### R基本随机变量相关函数（5种）
+
+R提供了专门函数，用于计算随机变量，如：
+
+* *二项(binomial)*分布
+* *泊松(poisson)*分布
+* *超几何(hypergeometric)*分布
+* *正态(normal)*分布
+* *均匀(uniform)*分布
+
+对应的：
+
+* *密度(density)*函数
+* *分布(probability)*函数
+* *分位数(quantile)*函数在特定自变量处的取值
+* 从特定分布产生*随机数(random number)*， 比如用于*蒙特卡洛计算*
+
+* 函数的共同点：
+  * 函数名由*函数类型英文首字母*+*随机变量英文缩写*构成。
+  比如二项分布的概率函数名为`pbinom`，正态分布的密度函数名为`dnorm`。
+* 函数的不同点：不同分布对应函数的参变量形参名不同。比如
+  * 二项分布的伯努利试验次数和成功概率两个形参名分别为`size`和`prob`；
+  * 正态分布的均值和标准差形参名分别为m`ean`和`sd`；
+  * 均匀分布区间端点对应形参名分别为`min`和`max`。
+  
+**注：**
+
+* 使用“形参=实参值”格式调用这些函数时，要特别注意不同分布对应的形参名。
+* 超几何分布对应R函数中，形参m,n,k的含义与教科书和一般参考资料中不一致，使用时要小心。
+* R中各个分布的函数名命名规则比较有规律，但
+不同分布的形参名容易混淆。相关函数调用，
+尤其是通过“形参名=实参值”形式调用时，要正确使用形参名。
+
+## 蒙特卡洛方法（的应用）
+
+### 定积分的蒙特卡洛近似计算
+
+定积分蒙特卡洛近似计算的基本思想
+
+* 一方面， 有界区间上的定积分(有界区间不是必须的，区间无界时，可用正态随机变量替代均匀随机变量)，只要积分存在，总可以理解为均匀分布随机变量某函数变换的数学期望，比如：
+
+$$
+\begin{aligned}
+&\int_{a}^{b} g(x) d x=\int_{a}^{b} g(x)(b-a)  \times \frac{1}{b-a} d x \\
+&=\int_{a}^{b} h(x) p_{U(a, b)}(x) d x=E_{U(a, b)}\{h(X)\}
+\end{aligned}\\
+( g(x) \triangleq h(x);\\
+\frac{1}{b-a} \triangleq p_{U(a, b)} ;)
+$$
+
+* 另一方面，由大数定律，若$𝑋_𝑖$为$𝑈(𝑎, 𝑏)$独立重复观测序列（为了与代码一致、并与样本量区分，重复次数记为${mc.rep}$），则重复次数${mc.rep}$充分大时，
+
+$$
+\frac{1}{\text { mc.rep }} \sum_{i=1}^{\text {mc.rep }} h\left(X_{i}\right) \approx E_{U(a, b)}\{h(X)\}=\int_{a}^{b} g(x) d x
+$$
+
+* 因此，可以通过产生一定量的随机数、计算各自函数值、求算术平均的方法，近似计算定积分。这种方法称为**定积分的蒙特卡洛近似计算**。
+
+#### 例1：定积分有精确值
+
+$$
+g(x) = x\\
+\int_{0}^{2} g(x) dx = ?
+$$
+
+```{r}
+a = 0
+b = 2
+g = function(x)x
+
+set.seed(1)     # 固定随机数生成初值，确保结果可重复计算
+mc.rep = 100    # 蒙特卡洛重复观测次数
+
+integ = function(a, b, r) {
+  mean( (b-a)*g(runif(mc.rep, min=a, max = b)) )
+}
+
+integ(a, b, mc.rep)
+
+mc.rep = 10000  # 重设观测次数
+integ(a, b, mc.rep)
+
+integrate(g, lower = a, upper = b)
+```
+
+#### 例2：定积分无精确值
+
+$$
+g(x) = dnorm(x) \\
+\int_{-2}^2 g(x)dx=? \\
+(dnorm(x, \mu, \sigma) = \frac{1}{\sqrt{2 \pi } \sigma } e^{-\frac{(x - \mu)^2} {2 \sigma^2}};\\
+dnorm(x) = dnorm(x, 0, 1))
+$$
+
+```{r}
+a = -2
+b = 2
+g = function(x) dnorm(x)
+
+set.seed(1)     # 固定随机数生成初值，确保结果可重复计算
+mc.rep = 100    # 蒙特卡洛重复观测次数
+
+integ = function(a, b, r) {
+  mean( (b-a)*g(runif(mc.rep, min=a, max = b)) )
+}
+
+integ(a, b, mc.rep)
+
+mc.rep = 10000        # 重设观测次数
+integ(a, b, mc.rep)
+
+integrate(g, lower = a, upper = b)
+
+pnorm(b) - pnorm(a)   # 正态函数pnorm()法
+```
+
+### 中心极限定理的有限样本表现
+
+中心极限定理简介
+
+* 在统计分析实践中，通常需要掌握样本均值$\bar{X}_{n}$的分布函数（通常精确分布函数非常复杂）。中心极限定理告诉我们，只要总体方差有限，样本均值的标准化变量${Z}_{n}$作为样本均值变量的线性变换，其分布函数在任何一点的取值，随着样本量𝑛的增加，收敛到标准正态分布在相同点取值；其中
+
+$$
+Z_{n}=\frac{\bar{X}_{n}-E\left(\bar{X}_{n}\right)}{s d\left(\bar{X}_{n}\right)}=\frac{\sqrt{n}\left\{\bar{X}_{n}-E(X)\right\}}{\sqrt{D(X)}}
+$$
+
+问题是：$n$大到什么程度，可以使用正态分布函数近似${Z}_{n}$的精确分布函数？
+
+* 可综合使用蒙特卡洛方法、经验分布计算函数`ecdf()`、基础绘图函数`plot()`，以及`lines()`函数，考察不同样本量下，${Z}_{n}$精确分布函数${P}({Z}_{n}≤{z})$的蒙特卡洛近似与标准正态分布函数$Φ({z})$，在任一点${z}$的接近程度。
