@@ -1,5 +1,5 @@
 ---
-title: "统计学导论A第四次作业"
+title: "统计学导论A第五次作业"
 author: "gly"
 date: '2022-04-19'
 output: html_document
