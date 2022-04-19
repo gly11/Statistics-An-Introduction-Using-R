@@ -1,0 +1,33 @@
+---
+title: "统计学导论A第四次作业"
+author: "gly"
+date: '2022-04-19'
+output: html_document
+---
+
+## 练习2.65
+
+```{r}
+x = seq(-3, 3, 0.5)                         # 设置自变量的值
+y = matrix(rnorm(30000, 2, 3), 1000, 30)    # 模拟1000组容量为30的样本，注意随机数的生成方法
+z = (rowSums(y)/30-2)*sqrt(30/9)            # 计算z的各个观测值，注意z的计算方法
+f = c()
+for (i in 1:length(x)) {
+  f = c(f, sum(z<=x[i])/1000)
+}
+
+Phi = pnorm(x, 0, 1)
+
+plot(x, Phi, type = "l", lty = 1, pch = 1, 
+     lwd = 2, col = "black", ylim = c(0, 1), ylab ="")
+for (i in 1:(length(f)-1)) {                # 注意不可照抄书上的值“60”！！！
+  lines(x[i:(i+1)], c(f[i], f[i]), lty = 1, lwd = 2, col = "red")
+  if (i == 1)
+    points(x[i], f[i], pch = 20, col = "red")
+  else if (f[i-1] != f[i])
+    points(x[i], f[i], pch = 20, col = "red")
+}
+legend("topleft", c(expression(Phi), expression(F[1000])), 
+       lty = 1, pch = c(-1, 20), col = c("black", "red"), lwd = 2)
+```
+

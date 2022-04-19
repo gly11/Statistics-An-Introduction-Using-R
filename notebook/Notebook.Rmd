@@ -777,7 +777,7 @@ Phi = pnorm(x, 0, 1)                      # 计算标准正态分布在x处的�
 
 plot(x, Phi, type = "l", lty = 1, pch = 1, 
      lwd = 2, col = "black", ylim = c(0, 1), ylab ="")
-for (i in 1:60) {
+for (i in 1:60) {                         # 60，本质上为：(length(f)-1)
   lines(x[i:(i+1)], c(f[i], f[i]), lty = 1, lwd = 2, col = "red")
   if (i == 1)
     points(x[i], f[i], pch = 20, col = "red")
@@ -786,7 +786,6 @@ for (i in 1:60) {
 }
 legend("topleft", c(expression(Phi), expression(F[1000])), 
        lty = 1, pch = c(-1, 20), col = c("black", "red"), lwd = 2)
-warnings()
 ```
 
 
