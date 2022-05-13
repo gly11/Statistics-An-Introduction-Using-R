@@ -1,0 +1,1700 @@
+---
+title: "R语言编程及统计分析基础"
+author: "段小刚"
+date: '2022年-春季'
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+  word_document:
+    toc: yes
+  pdf_document:
+    includes:
+      in_header: myHeader.tex
+    keep_tex: yes
+    latex_engine: xelatex
+    toc: yes
+---
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+清空当前工作空间
+```{r rm-working_space}
+rm( list=ls() )
+#Sys.setlocale("LC_ALL","Chinese")
+```
+
+
+
+
+<font color="red" size=6>
+
+1、理解并搭建R运行环境。
+
+2、正确设置工作路径能显著提升工作效率； 善于使用相对路径，避免使用绝对路径能，以增强程序可移植性。
+
+3、熟练使用函数、理解对象类属。
+
+4、保持自信，勤动手！
+
+</font>
+
+
+# 搭建运行环境
+
+## 什么是R语言？
+
+R是一个统计计算语言，是S语言的非商业实现（商业实现为SPLUS），擅长统计计算和绘图(R is a free software environment for statistical computing and graphics)。  RStudio是R的一个功能强大的集成开发环境。
+
+
+在R语言学习过程中，有两个概念非常重要：一是函数(function)，二是对象(对象)。
+一方面，在R语言中，一切皆为对象（everything are objects!），包括函数自身、函数的输入和返回值。另一方面，学会灵魂使用函数是掌握R语言的重要体现，不同函数的用法讲解将贯穿本课程始终。R语言函数定义语法为：
+
+
+```{r fun_struct0, eval=T, comment="", echo=F}
+cat( c("fun_name <- function( args_list ) { body_codes }",
+       "  fun_name：函数名", "  args_list：函数参数列表",
+       "  body_codes: 函数代码"), sep="\n") 
+```
+
+
+
+R是“动态类型”语言， 赋值实际上是“绑定”（binding）， 即将一个变量名与一个存储地址联系在一起， 同一个存储地址可以有多个变量名与其联系。
+
+
+学会使用帮助函数
+
+——help(),help.start(),?函数名
+
+用'help()'来阅读在线帮助文件，或
+用'help.start()'通过HTML浏览器来看帮助文件。
+
+
+
+## 安装并认识R和RStudio 
+
+
+演示R和RStudio的下载和安装。
+
+初次下载R，只安装了一些基础包(base packages)，但功能统计分析功能已足够强大，能满足常用基本模型的统计分析、统计运算和统计绘图。
+
+R还有超级多的扩展包(contributed packages)，以实现不同的特殊功能。
+
+
+
+## 正确设置工作路径
+
+工作路径（working directory）是程序文件....。正确设置工作路径是高效工作的重要基础。
+以下为两种工作路径设置方法：
+
+一是getwd(),setwd(),dir.create()函数组合; 
+
+二是快捷图标、创建项目。
+
+工作路径(wd: working directory)可以理解为特定任务或者特定R回话(R session)的执行场所。 合理创建和正确设置工作路径，往往便于找到执行特定任务所需的代码和数据。
+
+<font color="red">推荐方式：Rgui快捷图标方式；Rstudio创建项目方式。</font>
+
+1. Rgui快捷图标方式创建工作路径：从R安装路径中bin——x64子目录中，右键点击Rgui程序文件，选择发送到桌面快捷方式，把桌面快捷方式拷贝到目标文件夹内，右键点击选择属性，弹出对话框中清空“起始位置”。执行该任务时，从目标文件夹中双击快捷图标开始。
+
+2. Rstudio创建项目方式创建工作路径：打开Rstudio，依次点击
+File——New Project——Existing Directory，在Project working directory复选框中输入或浏览选择目标路径。
+执行该任务时，从目标文件夹中双击项目图标开始。
+
+
+
+```{r wd-funs}
+# 通过getwd()+setwd()函数查询和设置工作路径
+# 获取当前目录
+(old_wd <- getwd())
+# 设置新的工作路径
+#setwd("C:/Duan")
+getwd()
+setwd(old_wd)
+getwd()
+## setwd()设置的工作路径是临时的(关闭当前会话重启R或者RStudio设置失效);
+## 可以使用窗口永久更改工作目录,依次点击: 
+## RStuio-Tools-Global Options-General-
+# 可以通过拷贝R快捷图标的方式设置工作目录（演示）。
+
+# 通过dir.create()函数逐级(一次建立一个"/")建立新目录
+dir.create("C:/tmp")
+dir.create("C:/tmp/test")
+```
+
+
+
+# R语言编程基础
+
+
+## 基本数据类型
+
+R语言基本的数据类型有数值型(包括整形、双精度型)， 逻辑型(TRUE, FALSE)，字符型(单引号或双引号括起来的内容)。 支持缺失值，有专门的复数型。数据类型优先级(precedence)为：
+
+```{r data-precedence, eval=T, comment="", echo=F}
+cat( c("逻辑型 < 数值型 < 字符型"), sep="\n") 
+```
+
+在同个数据结构中，低级别数据类型自动转换为高级别类型数据。
+
+
+
+
+## 常量、变量、保留字
+
+
+和其他程序语言一样，R中有常量和变量之分，也包含有特定意义的保留字。
+
+### 常量(constants)
+
+常量是指其值不能改变的量，包括数值常量(numeric constants)，字符常量(character constants)和逻辑常量(logical constants)。
+
+
+数值常量包括所有整型(integer)、双精度型(double)、复数型(complex)数字；可通过typeof()函数确认数值常量的类型。通过在尾部添加L或者i可把整值数值型常量强制转换为整型数值型常量和复数型数值型常量。比如
+
+```{r typeof-fun}
+typeof(5)
+typeof(5L)
+typeof(5i)
+```
+
+在R中，以0X或者0x开头的数值型常量，表示十六进制数字。比如
+
+```{r hexadecimal-rep}
+0x8a
+#0X8a
+```
+
+双引号或单引号括起来的字符称为字符型常量。比如
+
+```{r char-const}
+"Hello, world!"
+typeof("Hello, world!")
+typeof("5")
+```
+
+逻辑常量有两个，即：TRUE, FALSE。
+
+
+### 变量(variables)
+
+变量用于存储数据，可根据需要调整存储内容。变量都有变量名，也称为变量标识符(identifiers)。变量名必须由字母、数字、下划线(_)和句点(.)组成，且变量名的第一个字符不能为数字。若变量名以句点作为第一个字符，第二个字符必须为字母 在中文环境下，汉字也可以作为变量名的合法字符使用。 变量名区分大小写，因此 y和Y是两个不同的变量名。
+
+以下为合法标识符/变量名：
+
+```{r valid-identifiers, eval=T, comment="", echo=F}
+cat( c("xyz", ".x1", "x_y_z"), sep=", ") 
+```
+
+以下为不合法标识符/变量名：
+```{r invalid-identifiers, eval=T, comment="", echo=F}
+cat( c("2xyz", ".1x", "xyz@bnu", "'Hello'"), sep=", ") 
+```
+
+
+
+### 保留字(reserved words)
+
+具有特定含义、不能用作变量标识符的字称为保留字。R语言保留字包括：
+
+```{r reserved-words, eval=T, comment="", echo=F}
+cat( c("函数定义及程序控制保留字：if, else, for, while, repeat, break, continue, next",
+       "逻辑常量保留字：TRUE, FALSE",
+       "Inf：正无穷", 
+       "NaN：Not a Number", 
+       "NA：Not Available, a logical constant of length 1 which contains a missing value indicator",
+       "NULL：空值对象, 通常为未定义取值的表达式或函数返回值"), 
+     sep="\n") 
+```
+
+
+
+```{r reserved-words-examples}
+# Inf  
+## 非零数除以0
+pi / 0
+## Inf+Inf
+1/0 + 1/0 # Inf
+
+# NaN
+## 0/0
+0 / 0  ## =  NaN
+## Inf-Inf
+1/0 - 1/0 
+
+# NA
+## 带名字属性、含缺失值的向量
+c(小明=80, 小王=90, 小李=NA)
+
+# NULL
+## 表达式返回值
+x <- {a<-rnorm(100); plot(a)}
+x
+## 函数返回值
+x <- (function(a){plot(a)})(rnorm(100))
+x
+```
+
+
+
+## 基本数据结构
+
+数据结构是存储数据的容器。
+R语言基本<font color="red">数据结构</font>包括：
+向量、矩阵、数据框、列表、因子。向量是R语言最基础的数据结构。掌握数据结构的关键有两方面，一是如何定义，二是如何访问数据结构中特定子集元素。
+
+
+
+因子是处理类别数据或分类数据(categoRical data)的数据结构，本质上是带有水平属性的向量。在R中，实际存储的是各分量对应水平的索引。
+
+
+### 向量(vector)
+
+
+矩阵和向量均为原子型(atomic)数据结构，“原子型”的含义为：数据结构中各元素在R中必须为或强制转化为相同类型数据。
+
+
+R语言中，c()函数(concatenate: 拼接)是定义向量的最基本函数；c()函数语法为：
+
+```{r c-fun, eval=T, comment="", echo=F}
+cat( c("c(...)",
+       "  ...：可变长度输入参数，拟拼接的对象"), sep="\n") 
+```
+
+
+```{r vector-c()Fun}
+## 建立向量基本函数c()
+#### 数值型向量; 赋值表达式最外侧原括弧对表示赋值同时打印左侧变量的结果
+( x <- c(1,6,8) )
+# 查看对象x类别
+class(x)
+# 查看对象x名字
+names(x)
+names(x) <- LETTERS[1:3]
+x
+#### 字符型向量; 数值、字符混合时,自动转换为字符
+( y <- c("Hello", 2019, "everyone", "!") )
+class(y)
+#### 逻辑型向量
+( z <- c(T, F, F, T, T, F) )
+class(z)
+```
+
+
+```{r vector-cFun-tmp}
+# 建立向量基本函数c()
+## 数值型向量; 赋值表达式最外侧原括弧对表示赋值同时打印左侧变量的结果
+( x <- c(1,6,8) )
+## 字符型向量; 数值、字符混合时,自动转换为字符
+( y <- c("Hello", 2019, "everyone", "!") )
+## 逻辑型向量
+( z <- c(T, F, F, T, T, F) )
+# 向量索引
+x[1]; y[c(2,3)]; z[c(1,2,6)]
+```
+
+
+针对有规律向量，比如等差数列，有更简洁的向量定义方式。
+
+```{r vector-otherFuns}
+# seq()函数生成特定步长等差数列
+seq(from=1, to=6, by=0.5)
+seq(from=0, to=1, length.out=11)
+# rep()函数对给定向量每个元素特定次数
+rep(c(0.2,0.5), 2)
+rep(c("a","b"), c(2,6))
+# paste()函数把输入“短”字符向量,按给定分割符连接成有规律“长”字符向量
+paste("a_", 1:8, sep="")
+# numeric()函数生成特定长度0向量
+numeric(2)
+# character()函数生成特定长度空字符向量
+character(6)
+# letters是R内置字符型向量，依次存放26个小写罗马字母
+letters[6]
+# LETTERS是R内置字符型向量，依次存放26个大写罗马字母
+LETTERS[1:7]
+```
+
+
+### 矩阵(matrix)
+
+矩阵是二维向量，由函数matrix()定义，默认情况下返回$1\times 1$矩阵，矩阵元素为NA；matrix()函数语法为：
+
+```{r matrix-fun, eval=T, comment="", echo=F}
+cat( c("matrix(data = NA, nrow = 1, ncol = 1, byrow = FALSE, dimnames = NULL)",
+       "  data：数据向量，默认值为缺失值NA", 
+       "  nrow：行数，默认值为1",
+       "  ncol：列数，默认值为1",
+       "  byrow：逻辑型，表示数据向量是否按行排列成矩阵，默认FALSE",
+       "  dimnames：可选矩阵行列名, 默认为空值, 或者为长度为2的列表, 列表元素分别为字符型向量, 表示行列名"), 
+     sep="\n") 
+```
+
+
+```{r matrix}
+## 矩阵定义
+A0 <- matrix(1:6, nrow=3, ncol=2, dimnames=list(letters[1:3],LETTERS[1:2])); print(A0)
+A <- matrix(1:6, nrow=3, ncol=2); print(A)
+B <- matrix(c(T, F, F, T, T, F), nrow=3); print(B)
+## 矩阵索引
+B[1,2]
+B[c(1,3),2]
+## 为矩阵添加行名、列名及矩阵对象属性
+names(A)
+attributes(A)
+colnames(A) <- c("数学","语文")
+row.names(A) <- letters[1:3]
+A
+attributes(A)
+```
+
+
+### 数据框(data frame)
+
+
+数据框是最接近数据分析实际的数据结构，呈表格型，行表示观测，列表示变量或字段，每列为同一数据类型，不同列之间可以保存不同的数据类型。类似与关系型数据库中的表。
+
+数据框可通过data.frame()函数定义，其语法为：
+
+```{r data.frame-fun, eval=T, comment="", echo=F}
+cat( c("data.frame(..., row.names = NULL, stringsAsFactors = TRUE)",
+       "  ...：形式为value，或者tag=value，value个数不限", 
+       "  row.names：行名，默认为空",
+       "  stringsAsFactors：字符型向量是否当作因子处理，默认为TRUE"), 
+     sep="\n") 
+```
+
+```{r dataframe}
+# 数据框定义
+
+d <- data.frame(
+    name=c("李aa", "张bb", "王cc"), 
+    gender=c("男","女","男"),
+    age=c(30, 35, 28), 
+    height=c(180, 162, 175))
+
+d <- data.frame(
+    name=c("李aa", "张bb", "王cc"), 
+    gender=c("男","女","男"),
+    age=c(30, 35, 28), 
+    height=c(180, 162, 175),
+    stringsAsFactors=FALSE)
+# 数据框元素索引/引用(多种引用方式)
+d[c(1,3),c(2,4)]
+d[,3]
+d[["age"]]
+#d[[age]]
+d$age
+d$"age"
+d["age"]
+#d[age]
+
+#### 体会下述两种输出方式的区别.
+d
+print(d)
+## 数据框不是特殊的矩阵(列表可以理解为特殊的向量; 参见下文列表定义)
+is.data.frame(d)
+is.matrix(d)
+## 数据框元素索引/引用(多种引用方式)
+d[,2]
+d[["age"]]
+d$age
+```
+
+
+### 列表(list)
+
+列表是R中最强大的数据结构，其各个位置可存放不同的数据结构，包括列表自身。
+
+R语言中，使用list()函数定义列表；函数语法为：
+
+```{r list-fun, eval=T, comment="", echo=F}
+cat( c("list(...)",
+       "  ...：可变长度输入参数，拟创建列表的对象"), sep="\n") 
+```
+
+
+
+```{r list}
+# 列表定义
+list.demo <- list(姓名="李明", 年龄=30, 语数外成绩=c(85, 76, 90))
+list.demo
+# 列表引用
+## 返回子列表
+list.demo[1]
+list.demo$姓名
+list.demo[1:2]
+list.demo[c("姓名","年龄")]
+# 列表可以理解为特殊的向量
+is.vector(list.demo)
+is.list(list.demo)
+
+# 列表引用
+#### 返回子列表
+list.demo[1]
+list.demo$姓名
+class(list.demo[1])
+list.demo[1:2]
+list.demo[c("姓名","年龄")]
+#### 返回列表对应位置存储的具体数据
+list.demo[[1]]
+class(list.demo[[1]])
+is.vector(list.demo[[3]])
+is.list(list.demo[[3]])
+```
+
+
+### 因子(factor)
+
+
+因子是向量型对象(vector object)，各水平值用于表达，另一个等长向量所有元素的不同取值。
+(A factor is a vector object used to specify a discrete classification (grouping) of the components of other vectors of the same length.)
+R提供了无序因子(unordered factors)和有序因子(ordered factors)和。因子的创建通过factor()函数实现，其语法如下：
+
+```{r factor-fun, eval=T, comment="", echo=F}
+cat( c("factor(x = character(), levels, labels = levels,
+       exclude = NA, ordered = is.ordered(x), nmax = NA)", 
+     "  x：数据向量，通常仅取少数几个不同值",
+     "  levels：可选字符型向量, 默认为x不同取值从小到大排序并转换成字符型",
+     "  labels：用于表达各水平值的标签",
+     "  exclude：构造因子水平时拟剔除水平值",
+     "  ordered：逻辑标志(logical flag), 声明水平是否有序", 
+     "  nmax：最大因子水平数"),
+     sep="\n") 
+```
+
+
+```{r factor-example}
+# 因子创建
+x <- rep(letters[1:3], c(2,4,6))
+factor(x)
+factor(x, labels = c("红","黄","蓝"))
+factor(x, exclude = "b")
+factor(x, labels = c("优","良","差"), ordered=TRUE)
+factor(x, labels = c("差","良","优"), ordered=TRUE)
+# 因子应用举例：计算不同水平值分组均值
+y <- 1:12 # 生成等长数值向量
+tapply(y, factor(x), mean) # 使用apply家族tapply()函数
+```
+
+
+
+
+## 运算符(operators)
+
+所有的运算符，都可以认为是二元函数(本质上是二元函数)，运算符函数的自变量有两个，每个都可取值为向量值、矩阵值。
+当运算符函数的两个变量均为向量或矩阵时，R按对应位置执行相应运算，结果仍然为相同维度的向量或矩阵。
+
+R 的运算符基本都是逐个元素运算符，即
+
+### 算术运算符(arithmetic operators)
+
+```{r arithmetic-operators, eval=T, comment="", echo=F}
+cat( c("+: 加(additon)",
+       "-: 减(subtraction)",
+       "*: 乘(multiplication)",
+       "/: 除(division)",
+       "^: 乘方(exponentiation)",
+       "%/%: 求余(modulus=remainder from division)",
+       "%/%: 整除(integer division)"), 
+     sep="\n") 
+```
+
+
+
+
+### 关系运算符(relational operators)
+
+
+```{r relational-operators, eval=T, comment="", echo=F}
+cat( c("<: 小于(less than)",
+       ">: 大于(greater than)",
+       "<=: 小于等于(less than or equal to)",
+       ">=: 大于等于(greater than or equal to)",
+       "==: 等于(equal to)",
+       "!=: 不等于(not equal to)"),
+       sep="\n") 
+```
+
+
+
+
+### 逻辑运算符(logical operators)
+
+
+```{r logical-operators, eval=T, comment="", echo=F}
+cat( c("!: 逻辑非(logical NOT)",
+       "&: 逐个元素逻辑与(element-wise logical AND)",
+       "|: 逐个元素逻辑或(element-wise logical OR)",
+       "&&: 首元素逻辑与(first element logical AND)",
+       "||: 首元素逻辑或(first element logical OR)"),
+       sep="\n") 
+```
+
+
+### 赋值运算符(assignment operator) 
+
+
+```{r assignment-operators, eval=T, comment="", echo=F}
+cat( c("<-, =: 向左赋值运算符(leftwards assignment)",
+       "->: 向右赋值运算符(rightwards assignment)"),
+       sep="\n") 
+```
+
+
+### 优先级(precedence)和结合律(associativity)
+
+
+在同个表达式中，可能出现多个运算符。运算符优先级(precedence)为：
+
+```{r operators-precedence, eval=T, comment="", echo=F}
+cat( c("逻辑运算符 < 关系运算符 < 算术运算符 < 赋值运算符"), sep="\n") 
+```
+
+可以通过一对圆括弧改变运算符优先级。
+
+结合律为：乘除优先于加减，同类运算符，由左至右两两结合依次运算。
+
+
+
+
+即：首先计算算术运算符，其次计算关系运算，最后计算逻辑运算。
+
+
+即：首先计算算术运算符(乘除优先于加减，相同优先级运算符，由左至右依次计算)，其次计算关系运算，最后计算逻辑运算。可以通过一对圆括弧改变运算符优先级。
+
+比如：
+
+```{r operators-precedence-eg1}
+# 表达式
+6-10/2 & 6 == 3*5-9
+# 等价于
+(6-10/2) & (6 == 3*5-9)
+
+# 表达式
+6/2/3 & 2^3^2-81
+# 等价于
+((6/2)/3) & (2^(3^2)-81)
+```
+
+
+相同运算符在一个表达式中可能连续出现多次，此时有运算符的结合律决定表达式取值。除了“乘方”运算符和向左赋值运算符结合律规则为“由右向左”，其它所有运算符结合顺序为“由左向右”。比如
+
+```{r operators-associativity-eg1}
+# 表达式
+6/2/3 & 2^3^2-81
+# 等价于
+((6/2)/3) & (2^(3^2)-81)
+# 向左连续赋值表达式
+a <- b <- 1
+a
+b
+# 等价于
+a <- (b <- 1)
+a
+b
+```
+
+
+
+
+
+
+## 自定义函数
+
+以下我们以具体代码的形式讲解函数的定义，以及R中控制结构的基本用法。
+
+### 函数定义
+
+函数是执行特定任务的一段代码封装。R中函数包括各种包中自带的函数，以及用户自定义函数。熟练使用函数是掌握R语言提升R语言使用效率的重要标志。R中函数定义结构为：
+
+```{r fun_struct, eval=T, comment="", echo=F}
+cat( c("fun_name <- function( args_list ) { body_codes }",
+       "  fun_name：函数名", "  args_list：函数参数列表",
+       "  body_codes: 函数代码"), sep="\n") 
+```
+
+函数可以接受参数（arguments/parameters），也可以不接收；可以返回值（returned value），也可以不返回；可以有函数名，也可以没有函数名，后者称为匿名函数（anonymous functions）。可以通过source()函数把保存特定函数的文件绑定到特定R会话（R session），或者直接把函数定义拷贝到R命令窗/当前执行任务的R文件，以使用目标函数。
+
+
+### 函数参数及默认值
+
+```{r fun_demo, eval=T}
+# 函数定义
+fun_demo <- function(x, y=c(1,2,3)){
+  return(x^y)
+}
+
+## 函数不同的调用方式
+# 使用参数默认值调用函数
+fun_demo(3)
+# 实参按位置匹配形参（actual arguments match formal arguments in positional order）
+fun_demo(3, 2) 
+fun_demo(3, 1:6)
+# 使用带名字参数调用（function call using named arguments）
+fun_demo(y=3, x=2)
+# 同时使用带名和不带名参数调用函数（function call with named and unnamed arguments simultaneously）
+fun_demo(y=3, 2)
+
+```
+
+
+### 匿名函数
+
+不带函数名字的函数定义称为匿名函数。
+
+```{r anoy_fun_demo, eval=T}
+#
+(function(x, y=c(1,2,3)){
+  return(x^y)
+})(3)
+#
+(function(x, y=c(1,2,3)){
+  return(x^y)
+})(x=2,y=1:6)
+
+```
+
+
+### 可变参数函数
+
+
+```{r varying_args, eval=T}
+# 函数定义举例
+powers <- function(x, ...) {
+    for(i in list(...)) {
+        print(x^i)
+    }
+}
+# 注意调用返回结果的不同
+powers(2, 1,2,3,4,5,6)
+powers(2, 1:6)
+powers(2, matrix(1:6,2), 1:6, 1,2,3,4,5,6)
+```
+
+
+### 函数作为函数定义输入参数
+
+
+```{r fun_as_args, eval=T}
+# 自定义函数
+fun_demo <- function(x, y=c(1,2,3)){
+  return(x^y)
+}
+# 函数定义举例
+fun_as_arg <- function(x, mult = 100, FUN = round, ...){
+ percent <- FUN(x*mult, ...)
+ percent <- paste(percent, "%", sep = "")
+ return(percent)
+}
+
+# 调用举例
+# 设置种子数，使得随机数生成值为固定值
+set.seed(20200716)
+# 生成均匀分布随机数
+x0 <- runif(6)
+print(x0)
+# 1. 使用默认R自带函数round作为输入参数
+fun_as_arg(x0, digits=0)
+fun_as_arg(x0, digits=2)
+fun_as_arg(x0, digits=4)
+# 2. 使用自定义函数fun_demo作为输入参数
+print(x0^2)
+print(x0*2)
+print((x0*2)^2)
+print((x0*2)^3)
+# 期望调用格式：此时实参y=2传递给fun_demo中的形参y？具体执行过程？
+fun_as_arg(x0, FUN=fun_demo, y=2)
+# 意外调用格式：此时实参2传递给mult形参
+fun_as_arg(x0, FUN=fun_demo, 2)
+
+```
+
+
+
+## 控制语句
+
+
+
+### 复合表达式(?grouped expression)
+
+R是表达式语言(expression language)，意味着R语言命令形式或者为表达式或者为函数调用，两者均返回一个结果(result)。即使赋值语句，在R语言中也是表达式，其结果为拟赋予的值(value assigned)。赋值可用在表达式可以出现的任何地方(特别地，这意味着在R中可以进行多重赋值)。
+
+多个R表达式，可以通过一对尖括弧“{}”整合在一起，形成复合表达式，其取值为最后一个表达式取值。该复合表达式可当作普通表达式，放在一对圆括弧“()”里，出现在表达式可以出现的任何位置。
+
+以下为复合表达式例子：
+
+```{r grouped-exp}
+# 以下复合表达式
+{x <- 1:6; y <- numeric(6); x&&y}
+# 等价于
+{x <- 1:6 
+  y <- numeric(6)
+  x&&y}
+```
+
+
+
+### 条件语句
+
+R语言二重判断条件语句if/else语法如下：
+
+```{r ifelse_struct, eval=T, comment="", echo=F}
+cat( c("if (condition 成立) exp1 else exp2",
+       "  condition：结果必须为单个逻辑值",
+       "  exp1,exp2：为两个普通表达式"), sep="\n") 
+```
+
+R语言中有个ifelse()函数，该函数是if/else语句的向量化，ifelse()函数语法为：
+
+```{r ifelse_fun, eval=T, comment="", echo=F}
+cat( c("ifelse(condition, a, b)",
+       "  condition：条件向量",
+       "  a：条件向量分量成立时函数取值",
+       "  b：条件向量分量不成立时函数取值",
+       "  函数返回值：与条件向量等长向量，分量成立时返回值对应元素为a,否则为b"), 
+     sep="\n") 
+```
+
+多重判断语句或者使用“if/else if/.../else”语句，或者使用“if(cond1) exp1; ...; if(condk) expk”，语法结构分别如下：
+
+```{r multiple-ifelse_struct, eval=T, comment="", echo=F}
+cat( c("if (cond1) exp1; else if (cond2) exp2; else exp3",
+       "",
+       "if (cond1) exp1; if (cond02) exp2; if (cond03) exp3",
+       "  注意：同一问题,上述两种表达, cond2和cond02, cond3和cond03形式通常不同"),
+     sep="\n") 
+```
+
+
+以下为简单示例：
+
+```{r ifelse.demo}
+# ifelse()函数
+ifelse(1:6>c(3,2,6,5,1,4), 1, 0)
+
+# 自定义函数演示三重判断
+tri.ifelse.demo <- function(x){
+  if (x <= -1){
+    y <- -1
+  }else if(x < 1){
+    y <- 0
+  }else{
+    y <- 1
+  }
+  return(y)
+}
+
+tri.ifelse.demo(-10)
+tri.ifelse.demo(10)
+tri.ifelse.demo(0.5)
+
+# 自定义函数演示三重判断——更简洁表达(仅测试，不推荐使用)
+tri.ifelse.demo <- function(x){
+  if (x <= -1)
+    y <- -1
+  else if(x < 1)
+    y <- 0
+  else  y <- 1
+  return(y)
+}
+
+tri.ifelse.demo(-10)
+tri.ifelse.demo(10)
+tri.ifelse.demo(0.5)
+```
+
+### 循环语句
+
+
+#### break/next保留字
+
+
+```{r break+next.statement, eval=T, comment="", echo=F}
+cat( c("  break：跳出循环体, 遇见break整个循环结束",
+       "  next：跳出当前循环, 进入下一轮循环; 遇到next, 当前循环next后面表达式不执行"), 
+     sep="\n") 
+```
+
+#### for循环
+
+```{r for.struct, eval=T, comment="", echo=F}
+cat( c("for (loop.variable in loop.vector) exps",
+       "  loop.variable：循环变量",
+       "  loop.vector：循环向量",
+       "  exp：复合表达式, 表达式取值通常依赖循环变量"), 
+     sep="\n") 
+```
+
+
+#### while循环
+
+
+```{r while.struct, eval=T, comment="", echo=F}
+cat( c("while (condition) exps",
+       "  condition：循环条件表达式,通常包含循环变量或与循环变量相关",
+       "  exp：复合表达式, 表达式取值通常依赖循环变量"), 
+     sep="\n") 
+```
+
+
+#### repeat循环
+
+
+```{r repeat.struct, eval=T, comment="", echo=F}
+cat( c("repeat exps",
+       "  较少使用, 通常要配合break语句, 否则容易死循环"), 
+     sep="\n") 
+```
+
+
+
+
+# R统计分析应用举例
+
+
+## 数据读入和写出
+
+R提供了很多函数，用于从控制台或文件输入数据，以及把结果展示到控制台或者存放在文件里。
+
+
+### scan()函数
+
+
+```{r scan.demo}
+# 从控制台读入
+# 从文件读入。演示文件test1.txt,test2.txt,test3.txt存于
+# 当前工作路径data子文件内。
+scan("./data/test1.txt", what=character())
+scan("./data/test2.txt", what=character()) 
+scan("./data/test3.txt", what=character()) 
+
+```
+
+### cat()函数
+
+
+```{r cat.demo}
+# 输出到控制台
+cat("cat: 拼接，打印", sep="\n")
+cat(1:3, sep="\n")
+# 输出到文件
+cat(1:6, file="./data/test4.txt", sep="\n", append=FALSE)
+cat(1:6, file="./data/test4.csv", sep="\n", append=FALSE)
+```
+
+
+
+### read.table()函数, write.table()函数
+
+
+```{r readtable.demo}
+# 演示文件test1.txt,test2.txt,test3.txt存于当前工作路径data子文件内。
+## 读入文件test1.txt：演示header参数取值作用
+#read.table("./data/test1.txt",header=FALSE) 
+read.table("./data/test1.txt", header=TRUE) 
+## 读入文件test2.txt：演示header参数取值作用
+read.table("./data/test2.txt") 
+read.table("./data/test2.txt", header=TRUE) 
+## 读入文件test3.txt：演示quote参数取值作用
+read.table("./data/test3.txt") 
+read.table("./data/test3.txt", quote="") 
+```
+
+
+
+```{r dataReadWrite-txt}
+# 数据框定义
+d <- data.frame(
+    name=c("李一", "张二", "王三"), 
+    gender=c("男","女","男"),
+    age=c(30, 35, 28), 
+    height=c(180, 162, 175))
+# write.table()函数
+write.table(d, file="./data/test6.txt", quote=F)
+write.table(d, file="./data/test7.txt", row.names=F)
+write.table(d, file="./data/test8.txt", row.names=T, quote=F)
+write.table(d, file="./data/test9.csv", sep=",", row.names=F)
+
+d1 <- read.table("test1.txt", header=T); print(d1)
+## 使用相对路径读入数据
+dir.create("data")
+write.table(d, file="./data/test4.txt", quote=F)
+```
+
+
+
+
+### read.csv()函数, write.csv()函数
+
+```{r dataReadWrite-csv}
+## 演示不同的方式读写.csv文件
+write.csv(d, file="./data/test1.csv", quote=F)
+print( read.csv(file="./data/test1.csv", header=T) )
+print( read.csv(file="./data/test1.csv") )
+print( read.table(file="./data/test1.csv", header=T, sep=",") )
+print( read.table(file="./data/test1.csv", header=T, sep=",", row.names=1) )
+print( read.table(file="./data/test1.csv", header=T, sep=",", row.names=1) )
+print( read.table(file="./data/test1.csv", header=T, sep=",", quote="'\"") )
+print( read.table(file="./data/test1.csv", header=T, sep=",", quote="\"\"") )
+print( read.table(file="test1.csv", header=T, sep=",") )
+```
+
+### 读入.xlsx文件: read_excel()函数
+
+```{r dataReadWrite-xlsx}
+## 读取.xlsx数据, 需要安装加载readxl包
+#install.packages("readxl")
+library(readxl)
+( test1 <- read_excel("./data/test1.xlsx",col_names = T) )
+```
+
+把R中数据框以.xlsx或者.xls格式保存，需要安装xlsx包，因需要下载安装java的一个插件，使用起来不太方便。对初学者，暂不推荐使用。
+
+
+
+## 概率分布相关函数  
+
+
+### p(/d/q/r)DistName()函数
+
+R语言提供了大量函数，用于计算常见概率分布的分布函数、密度函数(连续型变量)、概率函数(离散型变量)、分位数函数取值，以及生成特定分布随机数。基本结构如下：
+
+```{r dist_struct, eval=T, comment="", echo=F}
+cat( c("pDistName(x,extra.args)：计算DistName分布在x点分布函数取值",
+       "dDistName(x,extra.args)：计算DistName分布在x点密度函数或概率函数取值",
+       "qDistName(p,extra.args)：计算DistName分布的p分位数取值",
+       "rDistName(n,extra.args)：产生n个DistName分布随机数",
+       "  DistName：常见分布英文缩写",
+       "  extra.args：分布参数值,形式为pars=value",
+       "  注意：不同分布对应函数形参名及个数可能不同"),
+     sep="\n") 
+```
+
+
+
+
+```{r dist-examples}
+# 二项分布B(10,0.25)的0.5分位数
+qbinom(0.5, size=10, prob=0.25)
+# 从泊松分布Pois(1)产生6个随机数
+rpois(6, lambda=1)
+# 标准正态分布落在区间(-1,2)内的概率为P(-1<X<2)=P(X < 2) - P(X < -1)
+pnorm(2, mean=0, sd=1) - pnorm(-1, mean=0, sd=1) 
+# 均匀分布U(0,2)密度函数、分布函数在0.5点的取值，0.25分位数分别为
+dunif(0.5, min=0, max=2)
+punif(0.5, min=0, max=2)
+qunif(0.25, min=0, max=2)
+# 超几何分布应用场景: 容器里有m个白球、n个黑球，从中无放回随机抓球k次；
+#  记X表示抓到白球次数，X服从超几何分布，记为：X~hyper(m,n,k)。
+#  对应教科书中记号为：X~hyper(m,m+n,k)。
+## 容器里有1个白球9个黑球，随机抓球2次，抓到2个、1个、0个白球的概率分别为
+dhyper(2,1,9,2)
+dhyper(1,1,9,2)
+dhyper(0,1,9,2)
+## 三者之和为P(X<=2)=P(X=2)+P(X=1)+P(X=0)
+phyper(2,1,9,2)
+```
+
+
+
+
+### 蒙特卡洛方法
+
+
+#### 定积分近似计算
+
+```{r montecarlo.demo}
+# 例1：定积分有精确值，g(x)=x, a=0,b=2,b-a=2
+a <- 0; b <- 2; g <- function(x)x
+## 两种蒙特卡洛重复次数100、100000近似效果
+## 固定随机数生成初值，确保结果可重复计算。
+set.seed(123)
+## 蒙特卡洛重复观测个数
+mc.rep <- 100
+mean( (b-a)*(g(runif(mc.rep, min=a, max=b))) )
+mc.rep <- 100000
+mean( (b-a)*(g(runif(mc.rep, min=a, max=b))) )
+## R integrate()函数方法
+integrate(function(x)x, lower=a, upper=b)
+# 例2：定积分无精确值，g(x)=dnorm(x), a=-2,b=2,b-a=4
+a <- -2; b <- 2
+## 两种蒙特卡洛重复次数100、100000近似效果
+## 蒙特卡洛重复观测个数
+mc.rep <- 100
+mean( (b-a)*dnorm(runif(mc.rep, min=-2, max=2)) )
+mc.rep <- 100000
+mean( (b-a)*dnorm(runif(mc.rep, min=-2, max=2)) )
+## R integrate()函数方法
+integrate(dnorm, lower=a, upper=b)
+## 正态分布函数pnorm()法
+pnorm(b) - pnorm(a)
+```
+
+#### 中心极限定理的有限样本表现
+
+```{r clt-montecarlo.demo}
+# 总体为泊松分布 P(0.5)
+lambda <- 0.5
+# 蒙特卡洛重复次数为100000
+mc.rep <- 100000
+# 拟考察样本量为10, 30, 50, 100
+# 拟在以下点处，计算分布函数取值
+z <- seq(-3,3,0.1)
+# 绘图窗口
+par(mfrow=c(2,2))
+for (n in c(10, 30, 50, 100)){
+  # 通过抽取泊松分布随机数获得Zn的100000次重复观测
+  x <- matrix(rpois(n*mc.rep, lambda=lambda), nrow=n)
+  # 获取特定样本量下，Zn的mc.rep次重复值
+  Zn <- sqrt(n)*(colMeans(x) - lambda) / sqrt(lambda)
+  # 计算Zn的mc.rep次重复值对应的经验分布函数(因mc.rep很大，可视为Zn的精确分布)并绘图。
+  plot(ecdf(Zn), xlab="z", ylab="分布函数值", main=paste("样本量n=",n,sep=""))
+  # 添加标准正态分布函数，以便同Zn精确分布(的蒙特卡洛)做比较
+  lines(z,pnorm(z), col="red",lty=2)
+}
+
+
+```
+
+
+### sample()函数
+
+
+sample()函数用于从给定有限总体(finite population)中，按照有放回(with replacement)或者无放回(without replacement)抽取一定量子集。sample()函数语法为：
+
+
+```{r sample_fun, eval=T, comment="", echo=F}
+cat( c("sample(x, size, replace = FALSE, prob = NULL)",
+       "  x：向量, 表示拟抽取样本对应有限总体",
+       "  size：抽取子集元素个数",
+       "  replace：逻辑值, 表示是否放回, 默认不放回",
+       "  prob：总体x各分量被抽取相对可能性大小, 取值不必在(0,1)区间"),
+     sep="\n") 
+```
+
+
+
+
+```{r sample_example}
+# 有放回抽取数值向量(体会以下函数条用的区别和效果)
+sample(1:100, size=10, prob=ifelse(1:100>50,1,2))
+sample(1:100, size=10, prob=ifelse(1:100>50,2,1))
+# letters 为R内置字符型向量，存放26各小写字母
+sample(letters, size=10, prob=ifelse(1:26>13,1,2))
+# 无放回/有放回抽取数值向量
+sample(seq(from=0,to=1,by=0.01), size=6)
+sample(seq(from=0,to=1,by=0.01), size=6, replace=T)
+# 无放回/有放回抽取字符型总体：letters 为R内置字符型向量，存放26个小写字母
+sample(letters, size=6)
+sample(letters, size=6, replace=T)
+# 提取出按无放回方式抽取的6个小写字母
+letters[sample(26,6)]
+
+```
+
+
+
+
+## 基础绘图函数
+
+
+
+
+### plot()函数
+
+R有强大的绘图功能。plot()函数是R基础发行版（base distRibution）、也是整个R最基础最重要的绘图函数。ggplot2扩展包提供了一系列绘图工具。
+下面主要演示如何基于plot()函数绘制满足特定要求的图形。
+
+plot()函数语法为：
+
+```{r plot_fun, eval=T, comment="", echo=F}
+cat( c("plot(x,y, ...)",
+       "  x：图形坐标点",
+       "  y：图形y轴坐标点, 可选参数, 参数x合适时可省略y",
+       "  ...：传递给特定绘图方法的额外参数,可通过par()函数查看和设置, 通常包含以下参数",
+       "    type：绘图类型，包括点图('p')、线图('l')、点线图('b')、垂直线('h')、什么都不绘制('n')等",
+       "    main：图形总标题",
+       "    sub：图形副标题",
+       "    xlab：横轴标签",
+       "    ylab：纵轴标签",
+       "    asp：图形高宽比(纵横比)"),
+     sep="\n") 
+```
+
+
+
+在同一绘图窗口绘制$a$行$b$列共$ab$幅子图，可通过以下函数设置
+
+```{r multiple.plot_fun, eval=T, comment="", echo=F}
+cat( c("par(mfrow=c(a,b))",
+       "  a：子图行数",
+       "  b：子图列数"),
+     sep="\n") 
+```
+
+
+### 多幅子图
+
+```{r plot_example}
+# 通过par()函数mfrow形参设置2行2列子图，按行填充
+par(mfrow=c(2,2))
+# 数据
+x <- seq(-3,3,0.01)
+y <- exp(-x^2/2)/(2*pi)^(1/2)
+xb <- dbinom(0:10, size=10, p=0.25)
+xp <- dpois(0:20, lambda=2)
+# 第一幅子图
+plot(x,type="l",main="直线图")
+# 第二幅子图
+plot(x,y,type="l",main="标准正态分布密度函数图")
+# 第三幅子图
+plot(xb,type="h",main="二项分布概率函数图", xlab="二项分布取值", ylab="概率")
+# 第四幅子图
+plot(xp,type="h",main="泊松分布概率函数图", xlab="泊松分布取值", ylab="概率")
+```
+
+
+### 多条曲线
+
+在同一个图形里可以绘制多条曲线，有多种方式：
+
+一是在plot()函数开辟画板上，通过低级绘图函数lines()、segments()、abline()等添加曲线；
+
+二是通过curve()函数实现。
+
+
+
+```{r plot_example-mlines}
+# 多幅子图(每幅子图多条曲线)
+par(mfrow=c(2,2))
+# 准备绘图数据
+x <- seq(-3,3,0.01)
+y <- exp(-x^2/2)/(2*pi)^(1/2)
+xb <- dbinom(0:10, size=10, p=0.25)
+xp <- dpois(0:20, lambda=2)
+# 第一幅子图绘制多条曲线
+plot(x,y,type="l",main="标准正态分布密度函数图")
+segments(-2,0, -2,dnorm(-2), lty=2) # 添加线段
+segments(2,0, 2,dnorm(2), lty=2) # 添加线段
+abline(v=0, lty=2) # 添加垂直线
+abline(h=0, lty=2) # 添加水平线
+# 第二幅子图绘制多条曲线
+plot(x,y,type="l",ylim=c(-1,1)/2, main="标准正态分布密度及正弦曲线")
+lines(x,0.5*sin(x),type="l",col="red") #添加正弦曲线
+abline(h=0,lty=3) # 添加水平线
+abline(v=0,lty=3) # 添加垂直线
+# 第三幅子图
+curve(sin, from=-3, to=3, ylab="", main="正余弦曲线")
+curve(cos, from=-3, to=3, add=T, lty=2, col="red")
+# 第四幅子图
+x <- 0:50/50
+matplot(x, outer(x, 1:8, function(x, k) sin(k*pi * x)),
+        ylim = c(-2,2), type = "plobcsSh", ylab="", 
+        main= "matplot(,type = \"plobcsSh\" )")
+```
+
+
+
+
+```{r reproduce-ppt-Fig2_7}
+## 生成数值
+x <- seq(from=-4, to=4, by=0.1) # 自变量
+y <- pnorm(x) # 计算标准正态分布函数值
+## 基本绘图
+plot(x, y, type="l", lty=2, ylim=c(0,1), xaxt="n",  xaxs="i", yaxs="i", lwd=3, main="复杂绘图")
+## 定制x轴坐标、标签
+pos <- c(-2,0,2) # bug
+pos <- qnorm(c(0.25,0.5,0.75)) # bug
+labels <- letters[1:3] # c("a","b","c")
+axis(1, at=pos, labels=labels)
+## 修饰图形
+# 添加点
+points(pos[1], 0)
+points(pos[2], 0.25)
+points(pos[3], 0.5)
+# 添加线段
+segments(x[1],0,  pos[1], 0, lwd=3, col="red")
+segments(pos[1], 0, pos[1], pnorm(pos[1]), lwd=3, col="red", lty=3)
+segments(pos[1],pnorm(pos[1]),  pos[2],pnorm(pos[1]), lwd=3, col="red")
+segments(pos[2],pnorm(pos[1]),  pos[2],pnorm(pos[2]), lwd=3, col="red", lty=3)
+segments(pos[2],pnorm(pos[2]),  pos[3],pnorm(pos[2]), lwd=3, col="red")
+segments(pos[3],pnorm(pos[2]),  pos[3],pnorm(pos[3]), lwd=3, col="red",lty=3)
+segments(pos[3],pnorm(pos[3]), x[length(x)],pnorm(pos[3]),lwd=3, col="red")
+```
+
+
+
+### 带标注绘图
+
+```{r hypothesis-demo}
+# 基本图形设置
+bound <- 6
+xmin <- -bound 
+xmax <- bound
+alpha <- 0.05
+u_alpha <- qnorm(alpha/2)
+curve(dnorm, from=xmin, to=xmax, lwd=2)
+segments(-bound,0, bound,0, lty=2)
+segments(0,0,0,dnorm(0), lty=2, col="green",lwd=2)
+
+
+# 绘制拒绝域区域（左侧）
+step_len <- 0.001
+xL <- seq(xmin,u_alpha, step_len)
+yL <- dnorm(xL)
+polygon(x=c(xL,rev(xL)), y=c(rep(0,length(xL)),rev(yL)), col=rgb(red=1, green=0, blue=0,alpha=0.25))
+
+
+# 绘制拒绝域区域（右侧）
+xR <- seq(-u_alpha, xmax, step_len)
+yR <- dnorm(xR)
+polygon(x=c(xR,rev(xR)), y=c(rep(0,length(xR)),rev(yR)), col=rgb(red=1, green=0, blue=0,alpha=0.25))
+
+
+# 增加注释
+delta <- 0.01
+
+arrows(u_alpha-2, 0.1, u_alpha-0.5, dnorm(u_alpha-0.5), angle=10)
+text(u_alpha-2, 0.1+delta, "左侧尾部" )
+
+arrows(-u_alpha+2, 0.1, -u_alpha+0.5, dnorm(-u_alpha+0.5), angle=10)
+text(-u_alpha+2, 0.1+delta, "右侧尾部" )
+
+arrows(-u_alpha+2, 0.3, 1, dnorm(1), angle=10)
+text(-u_alpha+2, 0.3+delta, "N(0,1)密度函数曲线")
+
+
+```
+
+
+
+
+### hist()函数
+
+直方图是基于观测数据了解连续型总体密度函数曲线特征的基本工具。当样本量足够大、且分组恰当时，直方图可以近似认为是总体的密度函数。R语言绘制直方图函数hist()的语法为：
+
+plot()函数语法为：
+
+hist(x, breaks = "Sturges",
+     freq = NULL, probability = !freq,
+     include.lowest = TRUE, right = TRUE,
+     density = NULL, angle = 45, col = "lightgray", border = NULL,
+     main = paste("Histogram of" , xname),
+     xlim = range(breaks), ylim = NULL,
+     xlab = xname, ylab,
+     axes = TRUE, plot = TRUE, labels = FALSE,
+     nclass = NULL, warn.unused = TRUE, ...)
+
+
+```{r hist_fun, eval=T, comment="", echo=F}
+cat( c("hist(x, breaks=\"Sturges\", freq=NULL, include.lowest=TRUE, right=TRUE)", 
+       "  x：用于绘制直方图的向量值",
+       "  breaks：以下取值之一",
+       "    a vector giving the breakpoints between histogram cells(直方图分割点向量)", 
+       "    a function to compute the vector of breakpoints(计算分割点向量的函数)",
+       "    a single number giving the number of cells for the histogram(表示直方图柱子个数的整数值)",
+       "    a character string naming an algorithm to compute the number of cells(表达计算柱子个数的字符串)",
+       "    a function to compute the number of cells(计算柱子个数的函数)",
+       "  freq：逻辑值,取TRUE绘制频数直方图, 取FALSE绘制概率密度",
+       "  include.lowest：逻辑值,取TRUE表示等于分割点的观测值算入左侧柱子,否则算入右侧",
+       "  right：逻辑值,取TRUE表示分割区间左开右闭"),
+     sep="\n") 
+```
+
+
+
+
+
+
+```{r hist-examples}
+# 多幅子图
+par(mfrow=c(2,2))
+# 数据真实分布为N(0,1)，breaks_num表示分组数
+breaks_num <- 10
+hist(rnorm(10), breaks=breaks_num, freq=F, xlab="变量值", main="n=10")
+## add=T表示在直方图上添加N(0,1)密度曲线
+curve(dnorm, col="red", add=T) 
+# n = 50
+hist(rnorm(50), breaks=breaks_num, freq=F, xlab="变量值", main="n=50")
+curve(dnorm, col="red", add=T)
+# n = 500
+hist(rnorm(500), breaks=breaks_num, freq=F, ylim=c(0,0.5),
+     xlab="变量值",main="n=500")
+curve(dnorm, col="red", add=T)
+# n = 5000
+hist(rnorm(5000), breaks=breaks_num, freq=F, ylim=c(0,0.5), xlab="变量值", main="n=5000")
+curve(dnorm, col="red", add=T) 
+```
+
+
+
+### barplot
+
+barplot()函数用于绘制条形图，基本语法如下：
+
+
+```{r barplot_fun, eval=T, comment="", echo=F}
+cat( c("barplot(height, names.arg = NULL, legend.text = NULL, beside = FALSE)", 
+       "  height：向量或矩阵, 向量表示绘制条形高度; 矩阵表示堆积或并列条形高度",
+       "  legend.text：(仅height为矩阵是有效)或者为创建图例的向量,  或者为逻辑值表明是否创建图例. 此时,标签对应行名(if non-null)",
+       "  besides：逻辑值,取TRUE绘制并列条形图, 取FALSE绘制堆积条形图"),
+     sep="\n") 
+```
+
+
+
+
+```{r barplot-examples}
+# 通过随机模拟生成n行2列数据框，第一列表示性别，第二列表示最喜欢编程语言。
+## 生成数据 
+n <- 160
+# x1表示性别，0=女，1=男
+x1 <- numeric(n)
+x1[(1:n)%%3==0] <- 1
+gender <- factor(x1,labels=c("女","男"))
+# x2表示编程语言，0=R,1=python, 2=matlab, 3=SAS
+x2 <- numeric(n)
+x2[((1:n)%%7==1)|((1:n)%%7==2)|((1:n)%%7==3)] <- 1
+x2[((1:n)%%6==7)|((1:n)%%7==5)] <- 2
+x2[(1:n)%%7==6] <- 3
+language <- factor(x2,labels=c("R语言", "Python语言", "Matlab语言", "SAS语言"))
+## 数据框
+y <- data.frame(性别=gender, 编程语言=language)
+# 设置图形四周(下左上右)距画板边界距离,默认值c(5,4,4,2)+0.1
+par(mar=c(8,4,4,2))
+# 绘制条形图
+barplot(table(y),  # 对数据进行交叉分类统计频数
+        legend.text=T, # 添加图例
+        las=2 # 条形标签添加形式
+        )
+
+# 绘制条形图
+barplot(table(language))
+## case 1
+barplot(table(language))
+## case 2 
+#par(mar=c(8,2,2,1))
+barplot(table(y),  # 对数据进行交叉分类统计频数
+        legend.text=T, # 添加图例
+        las=2 # 条形标签添加形式
+        )
+```
+
+
+
+
+### boxplot()函数
+
+下面给出基于boxplot()函数的盒型图绘制方法，函数语法为：
+
+```{r boxplot_fun, eval=T, comment="", echo=F}
+cat( c("boxplot(x, ..., range = 1.5)", 
+       "  x：用于绘制盒型图的数值向量或仅包含该数值向量的列表",
+       "  ...：其中未命名参数表示额外拟绘制盒型图向量, 命名参数表示进一步图形控制参数",
+       "  range：表示盒型图外延线(whiskers)外延程度"),
+     sep="\n") 
+```
+
+
+
+
+```{r boxplot-examples}
+# 生成数据
+n <- 100
+thres <- 0.1
+tmp <- runif(n)
+x <- rnorm(n)
+outliers <- rnorm(n,1,5)
+# 对数据施加10%的污染
+y <- (tmp>=thres)*x + (tmp<thres)*outliers
+# 正常观测x盒型图
+boxplot(x, 
+        horizontal=T
+        )
+# 带污染观测y盒型图
+boxplot(y, 
+        notch=T, 
+        horizontal = F, 
+        range = 2
+        )
+```
+
+
+
+## 求解函数极值
+
+### 一元函数极值
+
+
+optimize()函数在给定区间内求解一元函数(关于函数第一个参变量)极值点，函数语法为：
+
+```{r optimize_fun, eval=T, comment="", echo=F}
+cat( c("optimize(f, interval, ..., maximum=FALSE)", 
+       "  f：拟优化函数",
+       "  interval：二维向量, 表示极小值搜索区间",
+       "  ...：传递给f的额外参数",
+       "  maximum：逻辑值，表示极小化还是极大化目标函数, 默认极小化"),
+     sep="\n") 
+```
+
+
+
+#### 二次函数极小值点
+
+optim()函数也可以用于求解一元函数极值，但系统会提示使用optimize()函数。
+
+
+```{r optimize-quadratic-fun}
+# 函数定义
+quadratic.fun <- function(x,a,b,c){
+  return(a*x^2 + b*x + c)
+}
+# 使用optimize()函数求极值
+quad.res <- optimize(quadratic.fun, interval=c(-6,6), a=1,b=-2,c=1)
+# 查看optimize()函数返回结果
+quad.res
+
+# 等价做法
+quadratic.fun.alt <- function(x,extra.par){
+  return(extra.par[1]*x^2 + extra.par[2]*x + extra.par[3])
+}
+# 使用optimize()函数求极值
+quad.res <- optimize(quadratic.fun.alt, interval=c(-6,6), extra.par=c(1,-3,1))
+# 查看optimize()函数返回结果
+quad.res
+```
+
+
+#### 泊松最大似然估计
+
+
+
+```{r optimize-poisson-mle}
+# 编写泊松分布对数似然函数
+pois.loglike <- function(lambda,x){
+  n <- length(x)
+  v <- log(lambda)*sum(x) - n*lambda
+  return(v)
+}
+# 生成数据
+## 样本量
+n <- 100
+## 固定随机数种子(确保结果可重复) 
+set.seed(123)
+## 生成泊松分布随机数
+x <- rpois(n,lambda=6)
+# 求解最大似然估计
+pois.mle.res <- optimize(pois.loglike, interval=c(0,100), x=x, maximum = T)
+# 结果查看
+pois.mle.res
+# 数值解和精确解对比
+c(数值结果=pois.mle.res$maximum, 精确结果=mean(x))
+```
+
+
+
+### 多元函数极值
+
+optim()函数是求解多元函数极值的多功能优化函数(general-purpose optimization)，函数语法为：
+
+
+```{r optim_fun, eval=T, comment="", echo=F}
+cat( c("optim(par, fn, ...,
+      method = c(\"Nelder-Mead\", \"BFGS\", \"CG\", \"L-BFGS-B\", \"SANN\", \"Brent\"), lower = -Inf, upper = Inf)", 
+       "  par：拟优化参数初始值",
+       "  fn：拟优化函数, 函数第一个参数为拟优化参数向量",
+       "  ...：传递给fn的额外参数"),
+     sep="\n") 
+```
+
+
+#### 正态总体最大似然估计
+
+```{r optim-norm-mle}
+# 定义正态分布负对数似然函数(求解最大似然估计等价于求解最小值点)
+minus.neg.loglike <- function(theta,x){
+  n <- length(x)
+  mu <- theta[1]
+  sigma2 <- theta[2]
+  v <- (n/2)*log(sigma2) + sum((x-mu)^2)/(2*sigma2)
+  return(v)
+}
+# 数据生成
+n <- 100
+set.seed(123)
+x <- rnorm(n)
+# optim()函数求解极小值点
+norm.mle.res <- optim(c(0,1),minus.neg.loglike,x=x)
+# 查看返回结果
+norm.mle.res
+# optim()函数数值解和精确解对比
+data.frame(数值解=norm.mle.res$par, 精确解=c(mean(x), var(x)*(n-1)/n))
+```
+
+
+#### 最小二乘回归估计
+
+
+```{r optim-ols}
+
+sum.of.resid <- function(beta,dat){
+  y <- dat[,1]
+  x <- dat[,-1]
+  rss <- sum((y - x%*%beta)^2)
+  return(rss)
+}
+set.seed(123)
+n <- 100
+x <- rexp(n)
+y <- x + rnorm(n)
+
+ols.res <- optim(c(0,1), sum.of.resid, dat=cbind(y,rep(1,n),x))
+# 数值解
+ols.res$par
+# lm()函数返回解
+lm.res <- lm(y~x)
+lm.res
+
+## 另一种解法
+# 定义线性模型残差平方和函数
+sum.of.resid.fun <- function(beta,y,X){
+  # 设x第一列恒为1
+  n <- length(y)
+  rss <- sum((y - X%*%beta)^2)
+  return(rss)
+}
+# 生成数据
+set.seed(123) # 设置随机数种子
+n <- 100 # 样本量
+x <- rexp(n) # 生成自变量
+y <- 1 + 2*x + rnorm(n) # 生成因变量
+# optim()数值计算结果
+ols.res <- optim(c(0,1), sum.of.resid.fun, y=y, X=cbind(rep(1,n),x))
+# 查看结果
+ols.res
+# 参数估计对比：optim()函数 vs lm()函数
+data.frame(optim函数估计=ols.res$par, lm函数估计=lm(y~x)$coefficients)
+```
+
+
+## 正态总体假设检验
+
+
+```{r norm.mean.test}
+set.seed(123)
+# 单总体、方差未知、正态总体均值检验：原假设mu=m0,备择假设mu!=mu0。
+t.test1.res <- t.test(rnorm(50,1.5,1), mu=1)
+t.test1.res
+t.test1.res$p.value
+names(t.test1.res)
+
+
+
+# 两总体、方差未知但相等、正态总体均值检验：原假设mu1>=mu2,备择假设mu1<mu2。
+t.test2.res <- t.test(rnorm(20,1,1), y=rnorm(30,1.5,1), alternative="less", mu=0, var.equal=TRUE)
+t.test2.res
+t.test2.res$p.value
+names(t.test2.res)
+```
+
+
+
+## 线性回归
+
+```{r plot_demo:BrokenStickReg}
+library(faraway)
+head(savings)
+str(savings)
+plot(sr ~ pop15,savings,xlab="Pop'n under age 15",  ylab="Savings Rate")
+## 分段回归
+lmod1 <- lm(sr ~ pop15, savings, subset=(pop15 < 35))
+lmod2 <- lm(sr ~ pop15, savings, subset=(pop15 >= 35))
+## 修饰散点图
+abline(v=35,lty=5)
+segments(20,lmod1$coef[1]+lmod1$coef[2]*20,35,  lmod1$coef[1]+lmod1$coef[2]*35)
+segments(48,lmod2$coef[1]+lmod2$coef[2]*48,35,  lmod2$coef[1]+lmod2$coef[2]*35)
+
+library(faraway)
+#### define base functions
+lhs <- function(x) ifelse(x < 35,35-x,0)
+rhs <- function(x) ifelse(x < 35,0,x-35)
+plot(sr ~ pop15,savings,xlab="Pop'n under age 15",  ylab="Savings Rate", ylim=c(-0.1, 25), main="Saving rate VS population age under 15")
+x <- seq(20,48,by=1)
+lines(x,lhs(x),lty=1, col=1, lwd=3)
+lines(x,rhs(x),lty=2, col=2, lwd=3)
+##  add segments(线段)
+abline(v=35,lty=5)
+segments(20,lmod1$coef[1]+lmod1$coef[2]*20,35,  lmod1$coef[1]+lmod1$coef[2]*35, col = 3, lty=3, lwd=2)
+segments(48,lmod2$coef[1]+lmod2$coef[2]*48,35,  lmod2$coef[1]+lmod2$coef[2]*35, col = 3, lty=3, lwd=2)
+## 截断函数回归
+lmod <- lm(sr ~ lhs(pop15) + rhs(pop15), savings)
+summary(lmod)
+x <- seq(20,48,by=1)
+py <- lmod$coef[1] + lmod$coef[2]*lhs(x) + lmod$coef[3]*rhs(x)
+lines(x,py,lty=4, col=4, lwd=2)
+## 增加图例
+#legend("top", c(expression(y==B[paste("1",",","35")](x)), expression(y==B[paste("2",",","35")](x)), "Piecewise", "Brokenline"), col = 1:4, lty = 1:4, lwd = rep(3,4), bg="gray", text.col = 5)
+legend("top", c(expression(y==B[paste("1",",","35")](x)), expression(y==B[paste("2",",","35")](x)), "Piecewise", "Brokenline"), col = 1:4, lty = 1:4, lwd = rep(3,4), bg="gray", text.col = 5)
+```
+
+
+上述图形对应的回归模型为：
+$$
+\begin{aligned}
+Y = \beta_0 + \beta_{1,c} B_{1,c}(x) + \beta_{2,c} B_{2,c}(x) + \epsilon,
+\end{aligned}
+$$
+其中
+$$
+\begin{aligned}
+B_{1,c}(x) &= 
+\left\{
+\begin{aligned}
+&c-x, & \mbox{if $x<c$},\\
+&0,   & \mbox{otherwise}.
+\end{aligned}
+\right. \\
+B_{2,c}(x) &= 
+\left\{
+\begin{aligned}
+&x-c, & \mbox{if $x\geq c$},\\
+&0,   & \mbox{otherwise}.
+\end{aligned}
+\right.
+\end{aligned}
+$$
+
+```{r RegDemo}
+# 使用第三方包faraway中的“储蓄率”数据集savings演示线性模型。需先通过install.packages("faraway")下载包，
+# 然后通过library(faraway)把该包复制到R当前会话。
+library(faraway)
+# 查看数据集前3行
+head(savings, n=3) 
+# 使用formula格式绘制观测数据散点图
+plot(sr ~ pop15, savings, xlab="15对以下人口比例",  ylab="储蓄率")
+# 整体拟合线性模型
+lmod <- lm(sr ~ pop15, savings)
+# 查看线性模型拟合结果
+names(lmod)
+# 添加整体拟合回归直线
+abline(lmod$coef,lty=3,col="green",lwd=2)
+# 对变量取值<35,>=35分别拟合线性模型
+lmod1 <- lm(sr ~ pop15, savings, subset=(pop15 < 35))
+lmod2 <- lm(sr ~ pop15, savings, subset=(pop15 >= 35))
+# 基于分段拟合结果，修饰散点图：添加线段
+abline(v=35,lty=5)
+segments(20,lmod1$coef[1]+lmod1$coef[2]*20,35,  
+         lmod1$coef[1]+lmod1$coef[2]*35, lty=1,col="red",lwd=2)
+segments(48,lmod2$coef[1]+lmod2$coef[2]*48,35,  
+         lmod2$coef[1]+lmod2$coef[2]*35, lty=1,col="red",lwd=2)
+# 增加图例
+legend("top", c("所有数据拟合","分段拟合"), col=c("green","red"), 
+       lty=c(2,1), lwd=c(2,2), bg="gray", text.col="blue")
+```

@@ -1,0 +1,20 @@
+---
+title: "统计学导论A第五次作业"
+author: "gly"
+date: '2022-05-06'
+output: html_document
+---
+
+## 练习 4.24
+
+```{r}
+x = rnorm(100)
+x_bar = mean(x)
+x_0.5 = quantile(x, 0.5)
+# k = log2(100)
+# k
+# g = seq(-5, 5, k)
+hist(x, freq = F, main = "", xlab = "x", ylab = "频率/组距", family = "Kai")
+boxplot(x, range = 1, ylab = "x")
+```
+
