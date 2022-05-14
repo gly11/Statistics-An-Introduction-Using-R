@@ -46,3 +46,6 @@ po/*~
 
 # html files
 *.html
+*.log
+*.pdf
+*.tex

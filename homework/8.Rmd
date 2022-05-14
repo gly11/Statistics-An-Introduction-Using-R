@@ -1,24 +1,117 @@
 ---
 title: "统计学导论A第八次作业"
-author: "gly"
-date: '2022-05-13'
+author: "甘凌云 202111011028"
+date: "2022-05-13"
 output: html_document
+  # pdf_document:
+    # includes:
+      # in_header: myHeader.tex
+    # keep_tex: yes
+    # latex_engine: xelatex
 ---
 
 ## 1. 练习 5.1
 
+**证明：**
+
+设总体$\Omega=\{X_1, X_2, ..., X_N\}$，总体均值为$\mu$样本$\omega_1, \omega_2, ... , \omega_n$为容量为$n$的样本。样本均值为：
+
+$$
+\bar{X} = \frac{1}{n}\sum_{k=1}^n\omega_k 
+$$
+
+$$
+E(\bar{X}) = E\left( \frac{1}{n}\sum_{k=1}^n\omega_k \right) = \frac{1}{n}\sum_{k=1}^nE\left( \omega_k \right) =\frac{1}{n}\sum_{k=1}^n \mu = \mu =  E(X)   \\
+\mathfrak{Q.E.D.}
+$$
+
+
 ## 2. 练习 5.2
 
+**证明：**
 
+设总体均值为$E(X) = \mu$，
+总体方差：
+
+$$
+D(X) = E(E(X)-X)^2 = E\left(X^2\right)-E^2(X) = E(X^2)-\mu^2 = \sigma^2
+$$
+
+故有：
+
+$$
+E(X^2)= D(X) + E^2(X) = \sigma^2+\mu^2
+$$
+
+样本方差：
+$$
+S^2 = \frac{1}{n-1}\sum^{n}_{k=1}\left(X_k-\bar{X}\right)^2
+$$
+
+
+因而
+$$
+E(S^2) = E\left(\frac{1}{n-1}\sum^{n}_{k=1}\left(X_k-\bar{X}\right)^2 \right) 
+$$
+
+$$
+= \frac{1}{n-1}\sum^{n}_{k=1} E\left(X_k-\bar{X}\right)^2 
+\\
+= \frac{1}{n-1}\sum^{n}_{k=1} E\left(X_k^2+\bar{X}^2-2X_k\bar{X} \right)
+\\
+= \frac{1}{n-1} E\left(\sum^{n}_{k=1}X_k^2 + \sum^{n}_{k=1}\bar{X}^2 - 2\sum^{n}_{k=1}X_k\bar{X} \right) \\
+= \frac{1}{n-1} E\left(\sum^{n}_{k=1}X_k^2 + n\bar{X}^2 - 2n\bar{X}\bar{X} \right) \\
+= \frac{1}{n-1} E\left(\sum^{n}_{k=1}X_k^2 - n\bar{X}^2 \right) \\
+= \frac{1}{n-1} \left(\sum^{n}_{k=1}E(X_k^2) - nE(\bar{X}^2) \right)
+$$
+
+而
+$$
+E(X_k^2)= D(X_k) + E^2(X_k)  = \sigma^2+\mu^2\\
+E(\bar{X}^2) = D(\bar{X}) + E^2(\bar{X}) =\frac{\sigma^2}{n} + \mu^2 \\
+\left(由于D(\bar{X}) = D\left(\frac{1}{n}\sum_{k=1}^n X_k = \frac{1}{n^2}\sum_{k=1}^nD(X_k) \right) = \frac{D(X)}{n} \right)
+$$
+
+故
+$$
+E(S^2) = \frac{1}{n-1} \left(n  (\sigma^2+\mu^2) - n(\frac{\sigma^2}{n} + \mu^2)\right) \\
+= \frac{1}{n-1} \left(n  \sigma^2 + n\mu^2 - \sigma^2 - n\mu^2\right) \\
+= \frac{1}{n-1} (n-1)  \sigma^2 \\
+= \sigma^2 \\
+\mathfrak{Q.E.D.}
+$$
+
+## 3. 练习 5.3
+
+**解：**
+
+代码如下：
 
 ```{r}
-x = rnorm(100)
-x_bar = mean(x)
-x_0.5 = quantile(x, 0.5)
-# k = log2(100)
-# k
-# g = seq(-5, 5, k)
-hist(x, freq = F, main = "", xlab = "x", ylab = "频率/组距", family = "Kai")
-boxplot(x, range = 1, ylab = "x")
+m = 10000     # 设置重复估计次数
+
+X = matrix(runif(3*m, 0, 1), nrow = m, ncol = 3)    # 3列，m行
+S2 = apply(X, 1, var)  # 表示按行应用
+T = S2*2/3
+
+barS2 = mean(S2)
+barT = mean(T)
+
+# 均匀分布的方差：(b-a)^2/12
+sigma_2 = 1/12
+
+mseS2 = mean((S2-sigma_2)^2)
+mseT = mean((T-sigma_2)^2)
+
+myResults = c(barS2, barT, mseS2, mseT)
+myResults = data.frame(myResults, row.names = c("mean(S2)", "mean(T)", "mse(S2)", "mse(T)") )
+round(myResults, 6)
 ```
 
+## 4. 练习 5.5
+
+**答：** 大数定律。
+
+## 5. 练习 5.6
+
+**答：** 原理为：选择参数使得样本出现的概率最大。
