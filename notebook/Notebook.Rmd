@@ -789,3 +789,63 @@ legend("topleft", c(expression(Phi), expression(F[1000])),
 ```
 
 
+#
+
+***2022-5-17***
+
+## R简单随机抽样
+
+### `sample()`函数的用法
+
+*抽样(sampling)*是从*有限总体(finite population)*获取数据的重要手段。*简单随机抽样(simple random sampling)*是最基础的抽样技术，分为*有放回(with replacement)简单随机抽样*和*无放回(without replacement)简单随机抽样*。
+
+`sample()`函数用于从给定的有限总体中（对应R中的向量），按照有放回或无放回的方式，抽取一定量的子集。其语法为：
+
+```{}
+sample(x, size, replace=FALSE)
+```
+
+其中：
+
+* `x`：取值为向量，表示拟抽取有限总体；若x长度为1且为正整数，表示从1:x中抽取子集。
+* `size`：表示拟抽取的样本量。
+* `replace`：逻辑值，表示是否采用又放回抽样，默认值为`FALSE`（不放回）
+
+## R数据读写
+
+### `cat()`函数
+
+`cat()`函数，concatenate and print，把原子型向量和字符串拼接、并输出到控制台或文件(Outputs the objects, concatenating the representations)；函数语法及形参含义如下：
+
+```{}
+cat(..., file="", sep=" ", append=FALSE)
+```
+
+* `···`：以英文逗号分割的原子型向量或字符串
+* `file`：可以是当前工作路径下的**数据文件名**，比如`"abc.txt"`；可以是数据文件的绝对路径，比如`"~/bin/R/Rproj/abc.txt"`；或相对路径`"./data/abc.txt"`。
+若`flie=""`，表示输出到**控制台**。
+* `sep`：字符串向量，指明添加在**拼接向量各元素之间**的字符串，默认为空格
+* `append`：逻辑值，仅当`file`为文件名时有用；`TRUE`表示'添加'，`FALSE`表示覆盖。
+
+### `scan()`函数
+
+`scan()`函数**从控制台或文件读入数据**，把读入数据**存放成向量或列表**(Read data into a vector or list from the console or file)，其语法如下：
+
+```{}
+scan(file="", what = double())
+```
+
+* `file`：文件名
+* `what`：指明输入数据类型，包括`logical`, `numeric`, `complex`, `character`, `raw` and `list`
+
+**注：**
+
+* `scan()`函数输入有两种方式：
+  1. 输入 数值、空格、数值、空格、···，最后**两次回车**
+  1. 输入 数值、回车、数值、回车、···，最后**两次回车**
+* 用`source()`函数读入R文件，并直接执行
+
+### `write.table()`函数
+
+### `read.table()`函数
+

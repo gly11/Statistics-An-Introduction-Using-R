@@ -1,0 +1,218 @@
+---
+title: "统计学导论A第九次作业"
+author: \textit{甘凌云 202111011028}
+date: "2022-05-18"
+output: 
+  # html_document
+  pdf_document:
+    includes:
+      in_header: myHeader.tex
+    keep_tex: yes
+    latex_engine: xelatex
+---
+
+## 1. 练习 5.7
+
+**解：**
+
+设产品合格率为p，合格为1，不合格为0，则总体服从分布：
+$$
+X \sim \left(
+\begin{array}{cc}
+0 & 1 \\
+1- p & p
+\end{array}\right) 
+$$
+(1). 利用矩估计，可得方程：
+
+\begin{equation}
+\frac{1}{n} \sum_{i=1}^{n} X_{i}=E(X)=p
+\end{equation}
+ 
+解得：
+\begin{equation}
+p=0.98
+\end{equation}
+
+故不合格率$1-p=0.02$.
+
+(2). 利用极大似然估计，
+
+\begin{equation}
+P(\xi=X_i) = \left( \begin{array}{c} 100 \\ X_i \end{array} \right)p^X_i(1-p)^{100-X_i}
+\end{equation}
+
+而，
+
+\begin{equation}\label{1}
+l(p, X_1, X_2, \dots, X_n) = \sum_{i=1}^{n} l(p, X_i) = \sum_{i=1}^{n} log P(\xi=X_i)
+\end{equation}
+
+则将$n=100$，其中$2$个不合格(不妨设为$X_1 = 0, X_2 = 0,X_3 = 1,  \dots, X_{100} = 1$)代入\eqref{1}式，得
+
+\begin{equation}
+\begin{aligned}
+\label{2}
+l(p, X_1, X_2, \dots, X_n) &= \sum_{i=1}^{n} log P(\xi=X_i) \\
+&= 98logP(\xi=1) + 2logP(\xi=0)\\
+&= 98log\:p + 2log(1-p)
+\end{aligned}
+\end{equation}
+
+对\eqref{2}式求导，得：
+
+\begin{equation}
+\begin{aligned}
+\label{2}
+l\prime (p, X_1, X_2, \dots, X_n) &=  \frac{98}{p} + \frac{2}{1-p}
+\end{aligned}
+\end{equation}
+
+求极值点，得：
+
+\begin{equation}
+\begin{aligned}
+\label{2}
+l\prime (p, X_1, X_2, \dots, X_n) &=  \frac{98}{p} - \frac{2}{1-p} = 0 \\
+\Rightarrow p &= 0.98
+\end{aligned}
+\end{equation}
+
+故不合格率$1-p=0.02$.
+
+
+
+<!--
+## 2. 练习 5.8
+
+**解：**
+
+
+设命中率为p，命中为1，脱靶为0，则总体服从分布：
+$$
+X \sim \left(
+\begin{array}{cc}
+0 & 1 \\
+1- p & p
+\end{array}\right) 
+$$
+(1). 利用矩估计，可得方程：
+
+\begin{equation}
+\frac{1}{n} \sum_{i=1}^{n} X_{i}=E(X)=p
+\end{equation}
+ 
+解得：
+\begin{equation}
+p=0.995
+\end{equation}
+
+故命中率$p=0.995$
+
+(2). 利用极大似然估计，
+
+\begin{equation}
+P(\xi=X_i) = \left( \begin{array}{c} 100 \\ X_i \end{array} \right)p^X_i(1-p)^{100-X_i}
+\end{equation}
+
+而，
+
+\begin{equation}\label{3}
+l(p, X_1, X_2, \dots, X_n) = \sum_{i=1}^{n} l(p, X_i) = \sum_{i=1}^{n} log P(\xi=X_i)
+\end{equation}
+
+则将$n=1000$，其中$5$个脱靶(不妨设为$X_1 = 0,\dots,  X_5 = 0,X_6 = 1,  \dots, X_{1000} = 1$)代入\eqref{3}式，得
+
+\begin{equation}
+\begin{aligned}
+\label{4}
+l(p, X_1, X_2, \dots, X_n) &= \sum_{i=1}^{n} log P(\xi=X_i) \\
+&= 995logP(\xi=1) + 5logP(\xi=0)\\
+&= 995log\:p + 5log(1-p)
+\end{aligned}
+\end{equation}
+
+对\eqref{4}式求导，得：
+
+\begin{equation}
+\begin{aligned}
+\label{5}
+l\prime (p, X_1, X_2, \dots, X_n) &=  \frac{995}{p} + \frac{5}{1-p}
+\end{aligned}
+\end{equation}
+
+求极值点，得：
+
+\begin{equation}
+\begin{aligned}
+\label{5}
+l\prime (p, X_1, X_2, \dots, X_n) &=  \frac{995}{p} - \frac{5}{1-p} = 0 \\
+\Rightarrow p &= 0.995
+\end{aligned}
+\end{equation}
+
+故命中率$p=0.995$
+
+!-->
+
+## 2. 练习 5.9
+
+**解：**
+
+待估参数为$\lambda$，且$\xi\sim P(\lambda)$，
+
+(1). 矩估计
+
+利用矩估计，可得方程：
+
+\begin{equation}
+\frac{1}{n} \sum_{i=1}^{n} X_{i}=E(X)=\lambda
+\end{equation}
+ 
+解得：
+\begin{equation}
+\lambda=2
+\end{equation}
+
+故$\lambda=2$.
+
+(2). 利用极大似然估计，由
+
+\begin{equation}
+P(\xi=X_i) = \frac{ (\lambda t)^{X_i} }{k!}e^{-\lambda t}, \:k=1, 2, \dots
+\end{equation}
+
+故，
+
+\begin{equation}
+\begin{aligned}
+l(p, X_1, X_2, \dots, X_n) &= \sum_{i=1}^{n} l(p, X_i) \\
+&= \sum_{i=1}^{n} log P(\xi=X_i)\\
+&= -\sum_{i=1}^{n} log X_i! + log\lambda \sum_{i=1}^{n} X_i - n\lambda
+\end{aligned}
+\end{equation}
+
+在该问题中，$n=32$。
+
+运行一下R代码：
+```{r}
+myFun = function(a, x) { # x 即为总和
+  return(log(a) * x - 32*a)
+}
+
+lambda = optimize(f=myFun, x = 64, c(0, 10), maximum = T)
+lambda$maximum
+```
+
+故$\lambda\approx2$.
+
+
+## 3. 练习 5.11
+
+**答：** 
+不能，置信区间$(2.5,2.8)$的置信度为0.99表示a的值落于该区间中的概率*不小于*0.99，而并不代表$a\in (2.5, 2.8)$的概率一定为0.99，其值可能大于0.99.
+
+## 4. 练习 5.12
+
+**答：** 
+概率含义为：$a\in(\hat{a}_1,\hat{a}_2)$成立的概率至少为0.99.
