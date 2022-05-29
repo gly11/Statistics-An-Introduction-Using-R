@@ -48,5 +48,4 @@ po/*~
 *.html
 *.log
 *.pdf
-*.tex
 *.aux

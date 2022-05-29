@@ -7,7 +7,7 @@ output:
   pdf_document:
     includes:
       in_header: myHeader.tex
-    keep_tex: yes
+    keep_tex: no
     latex_engine: xelatex
 ---
 
