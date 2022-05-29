@@ -1,0 +1,153 @@
+---
+title: "MSE的蒙特卡洛估计"
+author: "段小刚"
+date: "2022/5/27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# MSE 为例
+
+下面以正态分布方差估计为例。MSE如何定义？
+
+$$
+MSE(\hat\sigma^2,\sigma^2) = E[(\hat\sigma^2 -\sigma^2)^2] = Var(\hat\sigma^2) + [E(\hat\sigma^2) - \sigma^2]^2.
+$$
+
+如何基于观测数据$x_1,x_2,\ldots,x_n$估计$\sigma^2$? 两种常用的统计量分别为
+$$
+T_1 = \frac{1}{n}\sum_{i=1}^n(x_i-\bar{x})^2;
+$$
+$$
+T_2 = \frac{1}{n-1}\sum_{i=1}^n(x_i-\bar{x})^2 = \frac{n}{n-1}T_1.
+$$
+
+# 如何评价$T_1,T_2$优劣？
+
+## 计算各自MSE的理论公式，然后对比
+
+## 数值仿真、数值模拟、蒙特卡洛
+
+
+```{r}
+# 参数真值
+sigma2_true <- 6
+mu_true <- 0
+# 样本量
+n <- 10
+# 统计量定义
+T1 <- function(x){
+  n <- length(x)
+  T1_value <- sum( (x-mean(x))^2  ) / n
+  return(T1_value)
+}
+# 蒙特卡洛重复次数
+mc_rep <- 30
+# 设置随机数种子数
+set.seed(1)
+
+# MSE数值比较
+T1res <- rep(0, mc_rep)
+#T2res <- rep(0, mc_rep)
+for (k in 1:mc_rep){
+  xk <- rnorm(n, mu_true, sigma2_true)
+  T1k <- T1(xk)
+  #T2k <- T1k*n/(n-1)
+  T1res[k] <- T1k
+  #T2res[k] <- T2k
+}
+
+# for循环整体可以用一行代码取代
+# apply(x, T1res)
+#xmat <- matrix( rnorm(n*mc_rep, mu_true, sigma2_true), nrow = n )
+# apply(matrix( rnorm(n*mc_rep, mu_true, sigma2_true), nrow = n ),  T1)
+
+
+T1res
+
+( T2res <- T1res*n/(n-1) )
+
+# 使用蒙特卡洛方法计算MSE
+
+( T1mse <- mean( (T1res - sigma2_true)^2 ) )
+
+( T2mse <- mean( (T2res - sigma2_true)^2 ) )
+
+
+
+
+# 另一种方式
+
+msec_comp <- function(sigma2_true, n, mu_true, mc_rep=1000){
+  # MSE数值比较
+  T1res <- rep(0, mc_rep)
+  #T2res <- rep(0, mc_rep)
+  for (k in 1:mc_rep){
+    xk <- rnorm(n, mu_true, sigma2_true)
+    T1k <- T1(xk)
+    #T2k <- T1k*n/(n-1)
+    T1res[k] <- T1k
+    #T2res[k] <- T2k
+  }
+  T2res <- T1res*n/(n-1)
+  
+  # 计算mse
+  T1mse <- mean( (T1res - sigma2_true)^2 )
+  T2mse <- mean( (T2res - sigma2_true)^2 )
+
+  return( c(T1mse, T2mse) )
+
+}
+
+# 调用函数
+( mse_res <- msec_comp(5.6, 20, 1) )
+
+
+sigma2_true_vec <- seq(1,100)
+K <- length(sigma2_true_vec)
+res <- matrix(rep(0,2*K), ncol=2)
+for (k in 1:K){
+  resk <- msec_comp(sigma2_true_vec[k], 20, 1) 
+  res[k,] <- resk
+}
+head(res)
+
+plot(res[,1], res[,2])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+

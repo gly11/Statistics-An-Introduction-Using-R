@@ -1,0 +1,88 @@
+---
+title: "统计学导论A第十次作业"
+author: \textit{甘凌云 202111011028}
+date: "2022-05-28"
+output: 
+  # html_document
+  pdf_document:
+    includes:
+      in_header: myHeader.tex
+    keep_tex: yes
+    latex_engine: xelatex
+---
+
+## 1. 练习 5.13
+
+**答：**
+假设检验的原理为：在原假设成立的前提下，如果发生了与原假设矛盾的小概率事件，就拒绝原假设；否则，接受原假设。这一原理的思想与反证法类似，但用一种有特定含义的小概率事件代替了矛盾。
+
+## 2. 练习 5.14
+
+**解：**
+
+由题，
+
+$$
+H_0:\mu=0 
+$$
+$$
+D=\{t:t>4\}
+$$
+
+在$H_0:\mu=0$成立的条件下，$T=\bar X \in D$发生的概率为：
+
+\begin{equation}
+P_{H_0}(T \in D) = P_0(\bar X \in \{t:t>4\})
+\end{equation}
+
+当$X\sim N(\mu, \sigma^2)$时，$\bar X \sim N\bigl(E(X), \frac{D(X)}{n}\bigr)$，即$\bar X \sim N(\mu, \frac{\sigma^2}{n})$，故$\bar X \sim N(\mu, \frac{1}{n})$
+
+又由于
+\begin{equation}
+\Phi_{\mu,\sigma}=\Phi(\frac{x-\mu}{\sigma})
+\end{equation}
+
+
+\begin{equation} \label{eq1}
+P_0(\bar X \in \{t:t>4\}) = 1 - \Phi(4\sqrt n) \leq 0.05
+\end{equation}
+
+\begin{\e}
+\Rightarrow 4 \sqrt{n} \geq u_{0.95}
+\end{\e}
+
+其中$u_{0.95}$表示上0.95分位数，解得
+
+\begin{\e}
+n \geq 0.1690965
+\end{\e}
+
+故对于任意$n\in \mathbb{N}^*$，D可作为显著性水平为0.05的拒绝域。
+
+D所对应的检验规则饭第二类错误的概率不是最小，理由如下：
+
+设$D^\prime =\{t:t>x_{0.05}\}$在显著性水平0.05下使得犯第二类错误的概率最小，则
+\[
+x_{0.05} = inf\{y:P_0(t>y)\leq0.05\}
+\]
+
+由\eqref{eq1}，
+
+\begin{equation} 
+P_0(\bar X \in \{t:t>x_{0.05} \}) = 1 - \Phi(x_{0.05} \sqrt n) \leq 0.05
+\end{equation}
+
+\begin{\e}
+\Rightarrow x_{0.05} \sqrt{n} \geq u_{0.95}
+\end{\e}
+
+\begin{\e}
+\Rightarrow  x_{0.05} \geq \frac{u_{0.95}}{\sqrt{n}}
+\end{\e}
+
+
+\begin{\e}
+\Rightarrow  x_{0.05} \geq 1.644854
+\end{\e}
+
+即当$D^\prime =\{t:t>x_{0.05}=1.644854\}$时，犯第二类错误的概率小于D所对应的检验规则，故D所对应的检验规则饭第二类错误的概率不是最小。
